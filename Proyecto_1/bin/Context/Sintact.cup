@@ -1,0 +1,216 @@
+package Context;
+import java_cup.runtime.Symbol;
+import Error.ListError;
+import Error.Error;
+
+parser code
+{:
+    public void syntax_error(Symbol s) {
+        String msg = "Error Sintactico Recuperable\n"
+        + "En la linea: " + s.right + "\n"
+        + "En la columna: " + s.left + "\n"
+        + "Lexema: " + s.value + "\n";
+
+        ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
+    }
+
+    public void unrecovered_syntax_error(Symbol s){
+        String msg = "Error Sintactico No Recuperable\n"
+        + "En la linea: " + s.right + "\n"
+        + "En la columna: " + s.left + "\n"
+        + "Lexema: " + s.value + "\n";
+
+        ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
+    }
+:};
+
+terminal Suma, Resta, Producto, Division, UMenos, PAbre, PCierra, PComa;
+terminal Coma, IntAbre, IntCierra, Flecha, TNumero, TBoolean, TCadena;
+terminal TChar, True, False, Potencia, Modulo, Mayor, Menor, MayorIg, MenorIg;
+terminal Igual, Diferente, Or, And, Not, Inicio, Fin, Ingresar, Como, ConValor;
+terminal Si, Entonces, FinSi, DeLoContrario, OSi, Segun, Hacer, FinSegun, Para;
+terminal Hasta, FinPara, Incremental, Mientras, FinMientras, Repetir, HastaQue;
+terminal Retornar, Metodo, FinMetodo, ConParametros, Funcion, FinFuncion, Ejecutar;
+terminal Imprimir, ImprimirNl, Identificador, Numero, Cadena, Caracter;
+
+
+non terminal String INICIO;
+non terminal String INSTRUCCIONES;
+non terminal String INSTRUCCION;
+non terminal String DECLARACION;
+non terminal String ASIGNACION;
+non terminal String IDENTIFICADORES;
+non terminal String EXPRESION;
+non terminal String RELACIONAL;
+non terminal String LOGICO;
+non terminal String VALOR;
+non terminal String TIPO_DATO;
+non terminal String CONDICIONAL_SI;
+non terminal String CONDICIONESEXTRA;
+non terminal String CONDICIONEXTRA;
+non terminal String SELECCION_MULTIPLE;
+non terminal String CASOS;
+non terminal String CASO;
+non terminal String CICLO_PARA;
+non terminal String CICLO_MIENTRAS;
+non terminal String CICLO_REPETIR;
+non terminal String DECLARACION_METODO;
+non terminal String DECLARACION_FUNCION;
+non terminal String PARAMETROS;
+non terminal String PARAMETRO;
+non terminal String LLAMADA_FUNCION;
+non terminal String LISTA_VALORES;
+non terminal String IMPRESIONES;
+
+
+precedence left Or;
+precedence left And;
+precedence right Not;
+precedence left Igual, Diferente, Mayor, Menor, MayorIg, MenorIg;
+precedence left Suma, Resta;
+precedence left Producto, Division, Modulo;
+precedence left Potencia;
+precedence right UMenos;
+
+
+start with INICIO;
+
+INICIO ::= Inicio INSTRUCCIONES Fin
+    | error INSTRUCCIONES
+    ;
+
+INSTRUCCIONES ::= INSTRUCCIONES INSTRUCCION
+    | INSTRUCCION
+    ;
+
+INSTRUCCION ::= DECLARACION
+    | ASIGNACION
+    | CONDICIONAL_SI
+    | SELECCION_MULTIPLE
+    | CICLO_PARA
+    | CICLO_MIENTRAS
+    | CICLO_REPETIR
+    | DECLARACION_METODO
+    | DECLARACION_FUNCION
+    | LLAMADA_FUNCION
+    | IMPRESIONES
+    | Retornar EXPRESION PComa
+    ;
+
+DECLARACION ::= Ingresar IDENTIFICADORES Como TIPO_DATO ConValor EXPRESION PComa
+    | Ingresar IDENTIFICADORES Como TIPO_DATO PComa
+    ;
+
+ASIGNACION ::= IDENTIFICADORES Flecha EXPRESION PComa
+    ;
+
+IDENTIFICADORES ::= IDENTIFICADORES Coma Identificador
+    | Identificador
+    ;
+
+EXPRESION ::= Resta EXPRESION %prec UMenos
+    | EXPRESION Suma EXPRESION
+    | EXPRESION Resta EXPRESION
+    | EXPRESION Producto EXPRESION
+    | EXPRESION Division EXPRESION
+    | EXPRESION Potencia EXPRESION
+    | EXPRESION Modulo EXPRESION
+    | PAbre EXPRESION PCierra
+    | RELACIONAL
+    | LOGICO
+    | VALOR
+    ;
+
+RELACIONAL ::= EXPRESION Igual EXPRESION
+    | EXPRESION Diferente EXPRESION
+    | EXPRESION Mayor EXPRESION
+    | EXPRESION Menor EXPRESION
+    | EXPRESION MayorIg EXPRESION
+    | EXPRESION MenorIg EXPRESION
+    ;
+
+LOGICO ::= EXPRESION Or EXPRESION
+    | EXPRESION And EXPRESION
+    | Not EXPRESION
+    ;
+
+
+VALOR ::= Numero
+    | Cadena
+    | Caracter
+    | Identificador
+    | True
+    | False
+    ;
+
+TIPO_DATO ::= TNumero
+    | TCadena
+    | TChar
+    | TBoolean
+    ;
+
+CONDICIONAL_SI ::= Si RELACIONAL Entonces INSTRUCCIONES FinSi
+    | Si RELACIONAL INSTRUCCIONES DeLoContrario INSTRUCCIONES FinSi
+    | Si RELACIONAL INSTRUCCIONES CONDICIONESEXTRA FinSi
+    | Si RELACIONAL INSTRUCCIONES CONDICIONESEXTRA DeLoContrario INSTRUCCIONES FinSi
+    ;
+
+CONDICIONESEXTRA ::= CONDICIONESEXTRA CONDICIONEXTRA
+    | CONDICIONEXTRA
+    ;
+
+CONDICIONEXTRA ::= OSi RELACIONAL Entonces INSTRUCCIONES
+    ;
+
+SELECCION_MULTIPLE ::= Segun EXPRESION Hacer CASOS FinSegun
+    ;
+
+CASOS ::= CASOS CASO
+    | CASO
+    ;
+
+CASO ::= IntAbre EXPRESION IntCierra Entonces INSTRUCCIONES
+    | DeLoContrario INSTRUCCIONES
+    ;
+
+CICLO_PARA ::= Para EXPRESION Flecha EXPRESION Hasta EXPRESION Hacer INSTRUCCIONES FinPara
+    | Para EXPRESION Flecha EXPRESION Hasta EXPRESION Hacer FinPara
+    | Para EXPRESION Flecha EXPRESION Hasta EXPRESION Incremental EXPRESION Hacer INSTRUCCIONES FinPara
+    | Para EXPRESION Flecha EXPRESION Hasta EXPRESION Incremental EXPRESION Hacer FinPara
+    ; 
+
+CICLO_MIENTRAS ::= Mientras RELACIONAL Hacer INSTRUCCIONES FinMientras
+    | Mientras RELACIONAL Hacer FinMientras
+    ;
+
+CICLO_REPETIR ::= Repetir INSTRUCCIONES HastaQue RELACIONAL
+    | Repetir HastaQue RELACIONAL
+    ;
+
+DECLARACION_METODO ::= Metodo Identificador INSTRUCCIONES FinMetodo
+    | Metodo Identificador ConParametros PAbre PARAMETROS PCierra INSTRUCCIONES FinMetodo
+    ;
+
+DECLARACION_FUNCION ::= Funcion Identificador TIPO_DATO INSTRUCCIONES FinFuncion
+    | Funcion Identificador TIPO_DATO ConParametros PAbre PARAMETROS PCierra INSTRUCCIONES FinFuncion
+    ;
+
+PARAMETROS ::= PARAMETROS Coma PARAMETRO
+    | PARAMETRO
+    ;
+
+PARAMETRO ::= Identificador TIPO_DATO
+    ;
+
+LLAMADA_FUNCION ::= Ejecutar Identificador PAbre PCierra PComa
+    | Ejecutar Identificador PAbre LISTA_VALORES PCierra PComa
+    ;
+
+LISTA_VALORES ::= LISTA_VALORES Coma VALOR
+    | VALOR
+    ;
+
+IMPRESIONES ::= Imprimir EXPRESION PComa
+    | ImprimirNl EXPRESION PComa
+    ;
+
