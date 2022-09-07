@@ -9,5 +9,4 @@ public class Generate {
         jflex.Main.generate(pflex);
         java_cup.Main.main(cup);
     }
-    
 }

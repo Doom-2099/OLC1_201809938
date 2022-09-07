@@ -27,6 +27,14 @@ public class ControllerHome implements Initializable {
 
     private String pathfile;
 
+    private String codeIn;
+    private String codeOutPython;
+    private String codeOutGolang;
+
+    private boolean flagCodeIn = false;
+    private boolean flagCodeOutPython = false;
+    private boolean flagCodeOutGolang = false;
+
     @FXML
     private Label countErrors;
 
@@ -55,6 +63,7 @@ public class ControllerHome implements Initializable {
                 br.close();
                 fr.close();
                 System.out.println("El file Se Ha Cargado Correctamente");
+                setFlags(1);
             }
 
         } catch (NullPointerException ex) {
@@ -76,6 +85,7 @@ public class ControllerHome implements Initializable {
             bw.close();
             fw.close();
             System.out.println("El file Se Guardo Correctamente");
+            setFlags(4);
         } catch (IOException ioex) {
             System.err.println("El file No Se Pudo Guardar");
         }
@@ -103,7 +113,7 @@ public class ControllerHome implements Initializable {
 
                 if(!ListError.getInstance().isEmpty()) {
                     ArrayList<Error> errors = ListError.getInstance().getListError();
-                    countErrors.setText(errors.size() + "Errores");
+                    countErrors.setText(errors.size() + " Errores");
 
                     for(int i = 0; i < errors.size(); i++) {
                         System.out.println(errors.get(i).getMsg());
@@ -114,29 +124,71 @@ public class ControllerHome implements Initializable {
                 }
             } catch(Exception err) {
                 System.out.println(err);
+                System.out.println("Error En ControllerHome");
             }
         }
     }
 
     @FXML
     private void clear(ActionEvent e) {
+        setFlags(4);
+        codeIn = "";
+        codeOutPython = "";
+        codeOutGolang = "";
         System.out.println("Limpiando Area De Texto");
         pathfile = "";
+        textArea.clear();
     }
 
     @FXML
     private void selectIn(ActionEvent e) {
-        System.out.println("Mostar Contenido De Entrada");
+        saveText();
+        textArea.setText(codeIn);
+        setFlags(1);
     }
 
     @FXML
     private void selectPython(ActionEvent e) {
-        System.out.println("Mostrar Contenido De Python");
+        saveText();
+        textArea.setText(codeOutPython);
+        setFlags(2);
     }
 
     @FXML
     private void selectGolang(ActionEvent e) {
-        System.out.println("Mostrar Contenido De Golang");
+        saveText();
+        textArea.setText(codeOutGolang);
+        setFlags(3);
+    }
+
+    private void setFlags(int valor) {
+        if(valor == 1) {
+            flagCodeIn = true;
+            flagCodeOutPython = false;
+            flagCodeOutGolang = false;
+        } else if(valor == 2) {
+            flagCodeIn = false;
+            flagCodeOutPython = true;
+            flagCodeOutGolang = false;
+        } else if(valor == 3) {
+            flagCodeIn = false;
+            flagCodeOutPython = false;
+            flagCodeOutGolang = true;
+        } else {
+            flagCodeIn = false;
+            flagCodeOutPython = false;
+            flagCodeOutGolang = false;
+        }
+    }
+
+    private void saveText() {
+        if(flagCodeIn) {
+            codeIn = textArea.getText();
+        } else if(flagCodeOutGolang) {
+            codeOutGolang = textArea.getText();
+        } else if(flagCodeOutPython){
+            codeOutPython = textArea.getText();
+        }
     }
 
 

@@ -4,7 +4,6 @@ import Error.ListError;
 import Error.Error;
 
 %%
-
 %class Lex
 %public
 %cup
@@ -20,9 +19,9 @@ import Error.Error;
 
 E = [0-9]+
 L = [a-zA-Z]+
-ESP = [ ,\t,\r]+
+ESP = [ \t\r]+
 NUM = ({E})("."({E})*)?
-ID = (("_"{L}))({L}|{E})*("_")
+ID = ("_")({L}|{E}|({L}"_")|({E}"_"))+("_")
 CADENA = [\"\“][^\"\”\'\n]*[\"\”\n]
 CARACTER = [\']([a-zA-Z]|"${"{E}"}")[\']
 CMNTSINGLE = ("//".*\r\n)|("//".*\n)|("//".*\r)

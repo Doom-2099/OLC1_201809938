@@ -1,7 +1,8 @@
 package Context;
-import java_cup.runtime.Symbol;
+import java_cup.runtime.*;
 import Error.ListError;
 import Error.Error;
+import Model.Nodo;
 
 parser code
 {:
@@ -22,16 +23,16 @@ parser code
 
         ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
     }
-:};
+:}
 
-terminal Suma, Resta, Producto, Division, UMenos, PAbre, PCierra, PComa;
-terminal Coma, IntAbre, IntCierra, Flecha, TNumero, TBoolean, TCadena;
-terminal TChar, True, False, Potencia, Modulo, Mayor, Menor, MayorIg, MenorIg;
-terminal Igual, Diferente, Or, And, Not, Inicio, Fin, Ingresar, Como, ConValor;
-terminal Si, Entonces, FinSi, DeLoContrario, OSi, Segun, Hacer, FinSegun, Para;
-terminal Hasta, FinPara, Incremental, Mientras, FinMientras, Repetir, HastaQue;
-terminal Retornar, Metodo, FinMetodo, ConParametros, Funcion, FinFuncion, Ejecutar;
-terminal Imprimir, ImprimirNl, Identificador, Numero, Cadena, Caracter;
+terminal String Suma, Resta, Producto, Division, UMenos, PAbre, PCierra, PComa;
+terminal String Coma, IntAbre, IntCierra, Flecha, TNumero, TBoolean, TCadena;
+terminal String TChar, True, False, Potencia, Modulo, Mayor, Menor, MayorIg, MenorIg;
+terminal String Igual, Diferente, Or, And, Not, Inicio, Fin, Ingresar, Como, ConValor;
+terminal String Si, Entonces, FinSi, DeLoContrario, OSi, Segun, Hacer, FinSegun, Para;
+terminal String Hasta, FinPara, Incremental, Mientras, FinMientras, Repetir, HastaQue;
+terminal String Retornar, Metodo, FinMetodo, ConParametros, Funcion, FinFuncion, Ejecutar;
+terminal String Imprimir, ImprimirNl, Identificador, Numero, Cadena, Caracter;
 
 
 non terminal String INICIO;
@@ -76,11 +77,12 @@ precedence right UMenos;
 start with INICIO;
 
 INICIO ::= Inicio INSTRUCCIONES Fin
-    | error INSTRUCCIONES
     ;
 
-INSTRUCCIONES ::= INSTRUCCIONES INSTRUCCION
+INSTRUCCIONES ::= INSTRUCCION INSTRUCCIONES
     | INSTRUCCION
+    | error INSTRUCCIONES
+    | error 
     ;
 
 INSTRUCCION ::= DECLARACION
@@ -92,7 +94,7 @@ INSTRUCCION ::= DECLARACION
     | CICLO_REPETIR
     | DECLARACION_METODO
     | DECLARACION_FUNCION
-    | LLAMADA_FUNCION
+    | LLAMADA_FUNCION PComa
     | IMPRESIONES
     | Retornar EXPRESION PComa
     ;
@@ -104,7 +106,7 @@ DECLARACION ::= Ingresar IDENTIFICADORES Como TIPO_DATO ConValor EXPRESION PComa
 ASIGNACION ::= IDENTIFICADORES Flecha EXPRESION PComa
     ;
 
-IDENTIFICADORES ::= IDENTIFICADORES Coma Identificador
+IDENTIFICADORES ::= Identificador Coma IDENTIFICADORES
     | Identificador
     ;
 
@@ -116,6 +118,7 @@ EXPRESION ::= Resta EXPRESION %prec UMenos
     | EXPRESION Potencia EXPRESION
     | EXPRESION Modulo EXPRESION
     | PAbre EXPRESION PCierra
+    | LLAMADA_FUNCION
     | RELACIONAL
     | LOGICO
     | VALOR
@@ -134,7 +137,6 @@ LOGICO ::= EXPRESION Or EXPRESION
     | Not EXPRESION
     ;
 
-
 VALOR ::= Numero
     | Cadena
     | Caracter
@@ -149,10 +151,10 @@ TIPO_DATO ::= TNumero
     | TBoolean
     ;
 
-CONDICIONAL_SI ::= Si RELACIONAL Entonces INSTRUCCIONES FinSi
-    | Si RELACIONAL INSTRUCCIONES DeLoContrario INSTRUCCIONES FinSi
-    | Si RELACIONAL INSTRUCCIONES CONDICIONESEXTRA FinSi
-    | Si RELACIONAL INSTRUCCIONES CONDICIONESEXTRA DeLoContrario INSTRUCCIONES FinSi
+CONDICIONAL_SI ::= Si EXPRESION Entonces INSTRUCCIONES FinSi
+    | Si EXPRESION INSTRUCCIONES DeLoContrario INSTRUCCIONES FinSi
+    | Si EXPRESION INSTRUCCIONES CONDICIONESEXTRA FinSi
+    | Si EXPRESION INSTRUCCIONES CONDICIONESEXTRA DeLoContrario INSTRUCCIONES FinSi
     ;
 
 CONDICIONESEXTRA ::= CONDICIONESEXTRA CONDICIONEXTRA
@@ -165,7 +167,7 @@ CONDICIONEXTRA ::= OSi RELACIONAL Entonces INSTRUCCIONES
 SELECCION_MULTIPLE ::= Segun EXPRESION Hacer CASOS FinSegun
     ;
 
-CASOS ::= CASOS CASO
+CASOS ::= CASO CASOS
     | CASO
     ;
 
@@ -179,12 +181,12 @@ CICLO_PARA ::= Para EXPRESION Flecha EXPRESION Hasta EXPRESION Hacer INSTRUCCION
     | Para EXPRESION Flecha EXPRESION Hasta EXPRESION Incremental EXPRESION Hacer FinPara
     ; 
 
-CICLO_MIENTRAS ::= Mientras RELACIONAL Hacer INSTRUCCIONES FinMientras
-    | Mientras RELACIONAL Hacer FinMientras
+CICLO_MIENTRAS ::= Mientras EXPRESION Hacer INSTRUCCIONES FinMientras
+    | Mientras EXPRESION Hacer FinMientras
     ;
 
-CICLO_REPETIR ::= Repetir INSTRUCCIONES HastaQue RELACIONAL
-    | Repetir HastaQue RELACIONAL
+CICLO_REPETIR ::= Repetir INSTRUCCIONES HastaQue EXPRESION
+    | Repetir HastaQue EXPRESION
     ;
 
 DECLARACION_METODO ::= Metodo Identificador INSTRUCCIONES FinMetodo
@@ -195,19 +197,19 @@ DECLARACION_FUNCION ::= Funcion Identificador TIPO_DATO INSTRUCCIONES FinFuncion
     | Funcion Identificador TIPO_DATO ConParametros PAbre PARAMETROS PCierra INSTRUCCIONES FinFuncion
     ;
 
-PARAMETROS ::= PARAMETROS Coma PARAMETRO
+PARAMETROS ::= PARAMETRO Coma PARAMETROS
     | PARAMETRO
     ;
 
 PARAMETRO ::= Identificador TIPO_DATO
     ;
 
-LLAMADA_FUNCION ::= Ejecutar Identificador PAbre PCierra PComa
-    | Ejecutar Identificador PAbre LISTA_VALORES PCierra PComa
+LLAMADA_FUNCION ::= Ejecutar Identificador PAbre PCierra
+    | Ejecutar Identificador PAbre LISTA_VALORES PCierra
     ;
 
-LISTA_VALORES ::= LISTA_VALORES Coma VALOR
-    | VALOR
+LISTA_VALORES ::= EXPRESION Coma LISTA_VALORES
+    | EXPRESION
     ;
 
 IMPRESIONES ::= Imprimir EXPRESION PComa
