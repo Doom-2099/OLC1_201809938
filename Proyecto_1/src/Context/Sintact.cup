@@ -2,7 +2,10 @@ package Context;
 import java_cup.runtime.*;
 import Error.ListError;
 import Error.Error;
-import Model.Nodo;
+import Model.AST;
+import Model.Components.Expressions.NodeExp;
+import Model.Components.Instruccions.NodeIns;
+import java.util.ArrayList;
 
 parser code
 {:
@@ -25,7 +28,7 @@ parser code
     }
 :}
 
-terminal String Suma, Resta, Producto, Division, UMenos, PAbre, PCierra, PComa;
+terminal String Suma, Resta, Producto, Division, UMenos, PAbre, PCierra, CAbre, CCierra, PComa;
 terminal String Coma, IntAbre, IntCierra, Flecha, TNumero, TBoolean, TCadena;
 terminal String TChar, True, False, Potencia, Modulo, Mayor, Menor, MayorIg, MenorIg;
 terminal String Igual, Diferente, Or, And, Not, Inicio, Fin, Ingresar, Como, ConValor;
@@ -35,33 +38,33 @@ terminal String Retornar, Metodo, FinMetodo, ConParametros, Funcion, FinFuncion,
 terminal String Imprimir, ImprimirNl, Identificador, Numero, Cadena, Caracter;
 
 
-non terminal String INICIO;
-non terminal String INSTRUCCIONES;
-non terminal String INSTRUCCION;
-non terminal String DECLARACION;
-non terminal String ASIGNACION;
-non terminal String IDENTIFICADORES;
-non terminal String EXPRESION;
-non terminal String RELACIONAL;
-non terminal String LOGICO;
-non terminal String VALOR;
-non terminal String TIPO_DATO;
-non terminal String CONDICIONAL_SI;
-non terminal String CONDICIONESEXTRA;
-non terminal String CONDICIONEXTRA;
-non terminal String SELECCION_MULTIPLE;
-non terminal String CASOS;
-non terminal String CASO;
-non terminal String CICLO_PARA;
-non terminal String CICLO_MIENTRAS;
-non terminal String CICLO_REPETIR;
-non terminal String DECLARACION_METODO;
-non terminal String DECLARACION_FUNCION;
-non terminal String PARAMETROS;
-non terminal String PARAMETRO;
-non terminal String LLAMADA_FUNCION;
-non terminal String LISTA_VALORES;
-non terminal String IMPRESIONES;
+non terminal INICIO;
+non terminal INSTRUCCIONES;
+non terminal INSTRUCCION;
+non terminal DECLARACION;
+non terminal ASIGNACION;
+non terminal IDENTIFICADORES;
+non terminal NodeExp EXPRESION;
+non terminal NodeExp RELACIONAL;
+non terminal NodeExp LOGICO;
+non terminal NodeExp VALOR;
+non terminal TIPO_DATO;
+non terminal CONDICIONAL_SI;
+non terminal CONDICIONESEXTRA;
+non terminal CONDICIONEXTRA;
+non terminal SELECCION_MULTIPLE;
+non terminal CASOS;
+non terminal CASO;
+non terminal CICLO_PARA;
+non terminal CICLO_MIENTRAS;
+non terminal CICLO_REPETIR;
+non terminal DECLARACION_METODO;
+non terminal DECLARACION_FUNCION;
+non terminal PARAMETROS;
+non terminal PARAMETRO;
+non terminal LLAMADA_FUNCION;
+non terminal LISTA_VALORES;
+non terminal IMPRESIONES;
 
 
 precedence left Or;
@@ -76,143 +79,611 @@ precedence right UMenos;
 
 start with INICIO;
 
-INICIO ::= Inicio INSTRUCCIONES Fin
+INICIO ::= Inicio INSTRUCCIONES:inst Fin
+        {:
+            AST.getInstance().setRoot((ArrayList)inst);
+            AST.getInstance().walkTree();
+        :}
     ;
 
-INSTRUCCIONES ::= INSTRUCCION INSTRUCCIONES
-    | INSTRUCCION
-    | error INSTRUCCIONES
+INSTRUCCIONES ::= INSTRUCCION:inst INSTRUCCIONES:instrucciones
+        {:
+            ArrayList<NodeIns> _instrucciones = (ArrayList) instrucciones;
+            _instrucciones.add(0, (NodeIns)inst);
+            RESULT = _instrucciones;
+        :}
+    | INSTRUCCION:inst
+        {:
+            ArrayList<NodeIns> instrucciones = new ArrayList<>();
+            instrucciones.add(0, (NodeIns)inst);
+            RESULT = instrucciones;
+        :}
+    | error INSTRUCCIONES:instrucciones
+        {:
+            RESULT = instrucciones;
+        :}
     | error 
     ;
 
-INSTRUCCION ::= DECLARACION
-    | ASIGNACION
-    | CONDICIONAL_SI
-    | SELECCION_MULTIPLE
-    | CICLO_PARA
-    | CICLO_MIENTRAS
-    | CICLO_REPETIR
-    | DECLARACION_METODO
-    | DECLARACION_FUNCION
-    | LLAMADA_FUNCION PComa
-    | IMPRESIONES
-    | Retornar EXPRESION PComa
+INSTRUCCION ::= DECLARACION:nodo 
+        {: 
+            RESULT = nodo; 
+        :}
+    | ASIGNACION:nodo
+        {: 
+            RESULT = nodo; 
+        :}
+    | CONDICIONAL_SI:nodo
+        {: 
+            RESULT = nodo; 
+        :}
+    | SELECCION_MULTIPLE:nodo
+        {: 
+            RESULT = nodo; 
+        :}
+    | CICLO_PARA:nodo
+        {: 
+            RESULT = nodo; 
+        :}
+    | CICLO_MIENTRAS:nodo
+        {: 
+            RESULT = nodo; 
+        :}
+    | CICLO_REPETIR:nodo
+        {: 
+            RESULT = nodo; 
+        :}
+    | DECLARACION_METODO:nodo
+        {: 
+            RESULT = nodo; 
+        :}
+    | DECLARACION_FUNCION:nodo
+        {: 
+            RESULT = nodo; 
+        :}
+    | LLAMADA_FUNCION:nodo PComa
+        {: 
+            RESULT = nodo; 
+        :}
+    | IMPRESIONES:nodo
+        {: 
+            RESULT = nodo; 
+        :}
+    | Retornar EXPRESION:exp PComa 
+        {:
+            NodeIns nodo = new NodeIns("return");
+            nodo.putFeatures("expresion", exp);
+            RESULT = nodo;
+        :}
     ;
 
-DECLARACION ::= Ingresar IDENTIFICADORES Como TIPO_DATO ConValor EXPRESION PComa
-    | Ingresar IDENTIFICADORES Como TIPO_DATO PComa
+DECLARACION ::= Ingresar IDENTIFICADORES:idents Como TIPO_DATO:TD ConValor EXPRESION:exp PComa
+        {:
+            NodeIns nodo = new NodeIns("declaracion");
+            nodo.putFeatures("identificadores", idents);
+            nodo.putFeatures("tipoDato", TD);
+            nodo.putFeatures("valor", exp);
+            RESULT = nodo;
+        :}
+    | Ingresar IDENTIFICADORES:idents Como TIPO_DATO:TD PComa
+        {:
+                NodeIns nodo = new NodeIns("declaracion");
+                nodo.putFeatures("identificadores", idents);
+                nodo.putFeatures("tipoDato", TD);
+                RESULT = nodo;
+        :}
     ;
 
-ASIGNACION ::= IDENTIFICADORES Flecha EXPRESION PComa
+ASIGNACION ::= IDENTIFICADORES:idents Flecha EXPRESION:exp PComa
+        {:
+            NodeIns nodo = new NodeIns("Asignacion");
+            nodo.putFeatures("identificadores", idents);
+            nodo.putFeatures("valor", exp);
+            RESULT = nodo;
+        :}
     ;
 
-IDENTIFICADORES ::= Identificador Coma IDENTIFICADORES
-    | Identificador
+IDENTIFICADORES ::= Identificador:id Coma IDENTIFICADORES:idents
+        {:
+            ArrayList<String> _idents = (ArrayList)idents;
+            _idents.add(0, id);
+            RESULT = idents;
+        :}
+    | Identificador:id
+        {:
+            ArrayList<String> idents = new ArrayList<>();
+            idents.add(0, id);
+            RESULT = idents;
+        :}
     ;
 
-EXPRESION ::= Resta EXPRESION %prec UMenos
-    | EXPRESION Suma EXPRESION
-    | EXPRESION Resta EXPRESION
-    | EXPRESION Producto EXPRESION
-    | EXPRESION Division EXPRESION
-    | EXPRESION Potencia EXPRESION
-    | EXPRESION Modulo EXPRESION
-    | PAbre EXPRESION PCierra
-    | LLAMADA_FUNCION
-    | RELACIONAL
-    | LOGICO
-    | VALOR
+EXPRESION ::= Resta EXPRESION:op1
+        {:
+            NodeExp nodo = new NodeExp("M");
+            nodo.setOp1(op1);
+            RESULT = nodo;
+        :} %prec UMenos 
+    | EXPRESION:op1 Suma EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("+");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 Resta EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("-");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 Producto EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("*");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 Division EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("/");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 Potencia CAbre EXPRESION:op2 CCierra
+        {:
+            NodeExp nodo = new NodeExp("^");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 Modulo EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("%");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | PAbre EXPRESION:op1 PCierra
+        {:
+            NodeExp nodo = new NodeExp("()");
+            nodo.setOp1(op1);
+            RESULT = nodo;
+        :}
+    | LLAMADA_FUNCION:val
+        {:
+            NodeIns nodo = (NodeIns)val;
+            String cadena = "ejecutar";
+            cadena += "|" + nodo.getPropIns().get("id");
+            NodeExp nodoExp = new NodeExp(cadena);
+            
+            if(nodo.getPropIns().get("parametros") != null) {
+                nodoExp.setParametros((ArrayList)nodo.getPropIns().get("parametros"));
+            }
+            
+            RESULT = nodoExp;
+        :}
+    | RELACIONAL:val
+        {:
+            RESULT = val;
+        :}
+    | LOGICO:val 
+        {:
+            RESULT = val;
+        :}
+    | VALOR:val 
+        {: 
+            RESULT = val; 
+        :}
     ;
 
-RELACIONAL ::= EXPRESION Igual EXPRESION
-    | EXPRESION Diferente EXPRESION
-    | EXPRESION Mayor EXPRESION
-    | EXPRESION Menor EXPRESION
-    | EXPRESION MayorIg EXPRESION
-    | EXPRESION MenorIg EXPRESION
+RELACIONAL ::= EXPRESION:op1 Igual EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("==");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 Diferente EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("!=");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 Mayor EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp(">");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 Menor EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("<");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 MayorIg EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp(">=");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 MenorIg EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("<=");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
     ;
 
-LOGICO ::= EXPRESION Or EXPRESION
-    | EXPRESION And EXPRESION
-    | Not EXPRESION
+LOGICO ::= EXPRESION:op1 Or EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("||");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | EXPRESION:op1 And EXPRESION:op2
+        {:
+            NodeExp nodo = new NodeExp("&&");
+            nodo.setOp1(op1);
+            nodo.setOp2(op2);
+            RESULT = nodo;
+        :}
+    | Not EXPRESION:op1
+        {:
+            NodeExp nodo = new NodeExp("!");
+            nodo.setOp1(op1);
+            RESULT = nodo;
+        :}
     ;
 
-VALOR ::= Numero
-    | Cadena
-    | Caracter
-    | Identificador
-    | True
-    | False
+VALOR ::= Numero:val
+        {:
+            RESULT = new NodeExp(val);
+        :}
+    | Cadena:val
+        {:
+            RESULT = new NodeExp(val);
+        :}
+    | Caracter:val
+        {:
+            RESULT = new NodeExp(val);
+        :}
+    | Identificador:val
+        {:
+            RESULT = new NodeExp(val);
+        :}
+    | True:val
+        {:
+            RESULT = new NodeExp(val);
+        :}
+    | False:val
+        {:
+            RESULT = new NodeExp(val);
+        :}
     ;
 
-TIPO_DATO ::= TNumero
-    | TCadena
-    | TChar
-    | TBoolean
+TIPO_DATO ::= TNumero:val
+        {: 
+            RESULT = val;
+        :}
+    | TCadena:val
+        {:
+            RESULT = val;
+        :}
+    | TChar:val
+        {:
+            RESULT = val;
+        :}
+    | TBoolean:val
+        {:
+            RESULT = val;
+        :}
     ;
 
-CONDICIONAL_SI ::= Si EXPRESION Entonces INSTRUCCIONES FinSi
-    | Si EXPRESION INSTRUCCIONES DeLoContrario INSTRUCCIONES FinSi
-    | Si EXPRESION INSTRUCCIONES CONDICIONESEXTRA FinSi
-    | Si EXPRESION INSTRUCCIONES CONDICIONESEXTRA DeLoContrario INSTRUCCIONES FinSi
+
+
+
+CONDICIONAL_SI ::= Si EXPRESION:exp Entonces INSTRUCCIONES:insts FinSi
+        {:
+            NodeIns nodo = new NodeIns("if-simple");
+            nodo.putFeatures("condicion", exp);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | Si EXPRESION:exp INSTRUCCIONES:insts1 DeLoContrario INSTRUCCIONES:insts2 FinSi
+        {:
+            NodeIns nodo = new NodeIns("if-else");
+            NodeIns nodo2 = new NodeIns("else");
+            nodo.putFeatures("condicion", exp);
+            nodo.setInstrucciones((ArrayList)insts1);
+            nodo2.setInstrucciones((ArrayList)insts2);
+            nodo.putFeatures("else", nodo2);
+            RESULT = nodo;
+        :}
+    | Si EXPRESION:exp INSTRUCCIONES:insts CONDICIONESEXTRA:ifs FinSi
+        {:
+            NodeIns nodo = new NodeIns("if-elif");
+            nodo.putFeatures("condicion", exp);
+            nodo.putFeatures("elif", ifs);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | Si EXPRESION:exp INSTRUCCIONES:insts1 CONDICIONESEXTRA:ifs DeLoContrario INSTRUCCIONES:insts2 FinSi
+        {:
+            NodeIns nodo = new NodeIns("if-elif-else");
+            NodeIns nodo2 = new NodeIns("else");
+            nodo2.setInstrucciones((ArrayList)insts2);
+            nodo.putFeatures("condicion", exp);
+            nodo.putFeatures("elif", ifs);
+            nodo.putFeatures("else", nodo2);
+            nodo.setInstrucciones((ArrayList)insts1);
+            RESULT = nodo;
+        :}
     ;
 
-CONDICIONESEXTRA ::= CONDICIONESEXTRA CONDICIONEXTRA
-    | CONDICIONEXTRA
+CONDICIONESEXTRA ::= CONDICIONESEXTRA:nodos CONDICIONEXTRA:nodo
+        {: 
+            NodeIns _nodos = (NodeIns)nodos;
+            _nodos.putFeatures("elif", nodo);
+            RESULT = _nodos;
+        :}
+    | CONDICIONEXTRA:nodo
+        {:
+            RESULT = nodo;
+        :}
     ;
 
-CONDICIONEXTRA ::= OSi RELACIONAL Entonces INSTRUCCIONES
+CONDICIONEXTRA ::= OSi EXPRESION:exp Entonces INSTRUCCIONES:insts
+        {:
+            NodeIns nodo = new NodeIns("elif");
+            nodo.putFeatures("condicion", exp);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
     ;
 
-SELECCION_MULTIPLE ::= Segun EXPRESION Hacer CASOS FinSegun
+
+
+
+
+SELECCION_MULTIPLE ::= Segun EXPRESION:exp Hacer CASOS:cases FinSegun
+        {:
+            NodeIns nodo = new NodeIns("switch");
+            nodo.putFeatures("variable", exp);
+            nodo.putFeatures("casos", cases);
+            RESULT = nodo;
+        :}
     ;
 
-CASOS ::= CASO CASOS
-    | CASO
+CASOS ::= CASO:caso CASOS:cases
+        {:
+            ArrayList<NodeIns> _cases = (ArrayList)cases;
+            _cases.add(0, (NodeIns)caso);
+            RESULT = _cases;
+        :}
+    | CASO:caso
+        {:  
+            ArrayList<NodeIns> cases = new ArrayList<>();
+            cases.add(0, (NodeIns)caso);
+            RESULT = cases;
+        :}
     ;
 
-CASO ::= IntAbre EXPRESION IntCierra Entonces INSTRUCCIONES
-    | DeLoContrario INSTRUCCIONES
+CASO ::= IntAbre EXPRESION:exp IntCierra Entonces INSTRUCCIONES:insts
+        {:
+            NodeIns nodo = new NodeIns("case");
+            nodo.putFeatures("expresion", exp);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | DeLoContrario INSTRUCCIONES:insts
+        {:
+            NodeIns nodo = new NodeIns("case_default");
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
     ;
 
-CICLO_PARA ::= Para EXPRESION Flecha EXPRESION Hasta EXPRESION Hacer INSTRUCCIONES FinPara
-    | Para EXPRESION Flecha EXPRESION Hasta EXPRESION Hacer FinPara
-    | Para EXPRESION Flecha EXPRESION Hasta EXPRESION Incremental EXPRESION Hacer INSTRUCCIONES FinPara
-    | Para EXPRESION Flecha EXPRESION Hasta EXPRESION Incremental EXPRESION Hacer FinPara
+CICLO_PARA ::= Para EXPRESION:variable Flecha EXPRESION:exp1 Hasta EXPRESION:exp2 Hacer INSTRUCCIONES:insts FinPara
+        {:
+            NodeIns nodo = new NodeIns("for");
+            nodo.putFeatures("variable", variable);
+            nodo.putFeatures("inicio", exp1);
+            nodo.putFeatures("fin", exp2);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | Para EXPRESION:variable Flecha EXPRESION:exp1 Hasta EXPRESION:exp2 Hacer FinPara
+        {:
+            NodeIns nodo = new NodeIns("for");
+            nodo.putFeatures("variable", variable);
+            nodo.putFeatures("inicio", exp1);
+            nodo.putFeatures("fin", exp2);
+            RESULT = nodo;
+        :}
+    | Para EXPRESION:variable Flecha EXPRESION:exp1 Hasta EXPRESION:exp2 Incremental EXPRESION:inc Hacer INSTRUCCIONES:insts FinPara
+        {:
+            NodeIns nodo = new NodeIns("for");
+            nodo.putFeatures("variable", variable);
+            nodo.putFeatures("inicio", exp1);
+            nodo.putFeatures("fin", exp2);
+            nodo.putFeatures("incremento", inc);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | Para EXPRESION:variable Flecha EXPRESION:exp1 Hasta EXPRESION:exp2 Incremental EXPRESION:inc Hacer FinPara
+        {:
+            NodeIns nodo = new NodeIns("for");
+            nodo.putFeatures("variable", variable);
+            nodo.putFeatures("inicio", exp1);
+            nodo.putFeatures("fin", exp2);
+            nodo.putFeatures("incremento", inc);
+            RESULT = nodo;
+        :}
     ; 
 
-CICLO_MIENTRAS ::= Mientras EXPRESION Hacer INSTRUCCIONES FinMientras
-    | Mientras EXPRESION Hacer FinMientras
+CICLO_MIENTRAS ::= Mientras EXPRESION:exp Hacer INSTRUCCIONES:insts FinMientras
+        {:
+            NodeIns nodo = new NodeIns("while");
+            nodo.putFeatures("condicion", exp);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | Mientras EXPRESION:exp Hacer FinMientras
+        {:
+            NodeIns nodo = new NodeIns("while");
+            nodo.putFeatures("condicion", exp);
+            RESULT = nodo;
+        :}
     ;
 
-CICLO_REPETIR ::= Repetir INSTRUCCIONES HastaQue EXPRESION
-    | Repetir HastaQue EXPRESION
+CICLO_REPETIR ::= Repetir INSTRUCCIONES:insts HastaQue EXPRESION:exp
+        {:
+            NodeIns nodo = new NodeIns("doWhile");
+            nodo.putFeatures("condicion", exp);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | Repetir HastaQue EXPRESION:exp
+        {:
+            NodeIns nodo = new NodeIns("doWhile");
+            nodo.putFeatures("condicion", exp);
+            RESULT = nodo;
+        :}
     ;
 
-DECLARACION_METODO ::= Metodo Identificador INSTRUCCIONES FinMetodo
-    | Metodo Identificador ConParametros PAbre PARAMETROS PCierra INSTRUCCIONES FinMetodo
+DECLARACION_METODO ::= Metodo Identificador:id INSTRUCCIONES:insts FinMetodo
+        {:
+            NodeIns nodo = new NodeIns("declaracion_metodo");
+            nodo.putFeatures("id", id);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | Metodo Identificador:id ConParametros PAbre PARAMETROS:params PCierra INSTRUCCIONES:insts FinMetodo
+        {:
+            NodeIns nodo = new NodeIns("declaracion_metodo");
+            nodo.putFeatures("id", id);
+            nodo.putFeatures("parametros", params);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | Metodo Identificador:id FinMetodo
+        {:
+            NodeIns nodo = new NodeIns("declaracion_metodo");
+            nodo.putFeatures("id", id);
+            RESULT = nodo;
+        :}
+    | Metodo Identificador:id ConParametros PAbre PARAMETROS:params PCierra FinMetodo
+        {:
+            NodeIns nodo = new NodeIns("declaracion_metodo");
+            nodo.putFeatures("id", id);
+            nodo.putFeatures("parametros", params);
+            RESULT = nodo;
+        :}
     ;
 
-DECLARACION_FUNCION ::= Funcion Identificador TIPO_DATO INSTRUCCIONES FinFuncion
-    | Funcion Identificador TIPO_DATO ConParametros PAbre PARAMETROS PCierra INSTRUCCIONES FinFuncion
+DECLARACION_FUNCION ::= Funcion Identificador:id TIPO_DATO:TD INSTRUCCIONES:insts FinFuncion
+        {:
+            NodeIns nodo = new NodeIns("declaracion_funcion");
+            nodo.putFeatures("id", id);
+            nodo.putFeatures("tipoRetorno", TD);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | Funcion Identificador:id TIPO_DATO:TD ConParametros PAbre PARAMETROS:params PCierra INSTRUCCIONES:insts FinFuncion
+        {:
+            NodeIns nodo = new NodeIns("declaracion_funcion");
+            nodo.putFeatures("id", id);
+            nodo.putFeatures("tipoRetorno", TD);
+            nodo.putFeatures("parametros", params);
+            nodo.setInstrucciones((ArrayList)insts);
+            RESULT = nodo;
+        :}
+    | Funcion Identificador:id TIPO_DATO:TD FinFuncion
+        {:
+            NodeIns nodo = new NodeIns("declaracion_funcion");
+            nodo.putFeatures("id", id);
+            nodo.putFeatures("tipoRetorno", TD);
+            RESULT = nodo;
+        :}
+    | Funcion Identificador:id TIPO_DATO:TD ConParametros PAbre PARAMETROS:params PCierra FinFuncion
+        {:
+            NodeIns nodo = new NodeIns("declaracion_funcion");
+            nodo.putFeatures("id", id);
+            nodo.putFeatures("tipoRetorno", TD);
+            nodo.putFeatures("parametros", params);
+            RESULT = nodo;
+        :}
     ;
 
-PARAMETROS ::= PARAMETRO Coma PARAMETROS
-    | PARAMETRO
+PARAMETROS ::= PARAMETRO:param Coma PARAMETROS:params
+        {:
+            ArrayList<String> _params = (ArrayList)params;
+            _params.add(0, (String)param);
+            RESULT = _params;
+        :}
+    | PARAMETRO:param
+        {:
+            ArrayList<String> params = new ArrayList<>();
+            params.add(0, (String)param);
+            RESULT = params;
+        :}
     ;
 
-PARAMETRO ::= Identificador TIPO_DATO
+PARAMETRO ::= Identificador:id TIPO_DATO:TD
+        {:
+            RESULT = id + "-" + TD;
+        :}
     ;
 
-LLAMADA_FUNCION ::= Ejecutar Identificador PAbre PCierra
-    | Ejecutar Identificador PAbre LISTA_VALORES PCierra
+LLAMADA_FUNCION ::= Ejecutar Identificador:id PAbre PCierra
+        {:
+            NodeIns nodo = new NodeIns("ejecutar");
+            nodo.putFeatures("id", id);
+            RESULT = nodo;
+        :}
+    | Ejecutar Identificador:id PAbre LISTA_VALORES:parametros PCierra
+        {:
+            NodeIns nodo = new NodeIns("ejecutar");
+            nodo.putFeatures("id", id);
+            nodo.putFeatures("parametros", parametros);
+            RESULT = nodo;
+        :}
     ;
 
-LISTA_VALORES ::= EXPRESION Coma LISTA_VALORES
-    | EXPRESION
+LISTA_VALORES ::= EXPRESION:exp Coma LISTA_VALORES:exps
+        {:
+            ArrayList<NodeExp> _exps = (ArrayList)exps;
+            _exps.add(0, exp);
+            RESULT = exps;
+        :}
+    | EXPRESION:exp
+        {:
+            ArrayList<NodeExp> exps = new ArrayList<>();
+            exps.add(0, (NodeExp)exp);
+            RESULT = exps;  
+        :}
     ;
 
-IMPRESIONES ::= Imprimir EXPRESION PComa
-    | ImprimirNl EXPRESION PComa
+IMPRESIONES ::= Imprimir EXPRESION:exp PComa
+        {:
+            NodeIns nodo = new NodeIns("imprimir");
+            nodo.putFeatures("expresion", exp);
+            RESULT = nodo;
+        :}
+    | ImprimirNl EXPRESION:exp PComa
+        {:
+            NodeIns nodo = new NodeIns("imprimir_nl");
+            nodo.putFeatures("expresion", exp);
+            RESULT = nodo;
+        :}
     ;
 

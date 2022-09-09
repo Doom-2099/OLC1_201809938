@@ -46,7 +46,7 @@ metodo _potenciaManual_ con_parametros (_base_ Numero, _exponenete_ Numero)
 fin_metodo
 
 funcion _potenciaFuncion_ Numero con_parametros (_base_ Numero, _exponente_ Numero) 
-	ingresar _potencia_ como Numero con_valor _base_ potencia _exponente_;
+	ingresar _potencia_ como Numero con_valor _base_ potencia [_exponente_];
 	retornar _potencia_;
 fin_funcion
 

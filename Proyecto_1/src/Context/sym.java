@@ -9,70 +9,72 @@ package Context;
 public class sym {
   /* terminals */
   public static final int Producto = 4;
-  public static final int FinSi = 38;
-  public static final int Or = 28;
-  public static final int True = 18;
-  public static final int Coma = 10;
-  public static final int Metodo = 53;
+  public static final int FinSi = 40;
+  public static final int Or = 30;
+  public static final int CCierra = 10;
+  public static final int True = 20;
+  public static final int Coma = 12;
+  public static final int Metodo = 55;
   public static final int PCierra = 8;
   public static final int UMenos = 6;
-  public static final int FinMientras = 49;
-  public static final int TNumero = 14;
-  public static final int PComa = 9;
-  public static final int Diferente = 27;
+  public static final int FinMientras = 51;
+  public static final int TNumero = 16;
+  public static final int PComa = 11;
+  public static final int Diferente = 29;
   public static final int PAbre = 7;
-  public static final int Potencia = 20;
-  public static final int Menor = 23;
-  public static final int Repetir = 50;
-  public static final int Ingresar = 33;
-  public static final int IntAbre = 11;
-  public static final int Mayor = 22;
-  public static final int ImprimirNl = 60;
-  public static final int Retornar = 52;
-  public static final int FinMetodo = 54;
-  public static final int Para = 44;
+  public static final int Potencia = 22;
+  public static final int Menor = 25;
+  public static final int Repetir = 52;
+  public static final int Ingresar = 35;
+  public static final int IntAbre = 13;
+  public static final int Mayor = 24;
+  public static final int ImprimirNl = 62;
+  public static final int Retornar = 54;
+  public static final int FinMetodo = 56;
+  public static final int Para = 46;
   public static final int Division = 5;
-  public static final int Cadena = 63;
-  public static final int Ejecutar = 58;
-  public static final int FinFuncion = 57;
-  public static final int TBoolean = 15;
-  public static final int Modulo = 21;
-  public static final int Fin = 32;
-  public static final int Segun = 41;
-  public static final int Hacer = 42;
+  public static final int Cadena = 65;
+  public static final int Ejecutar = 60;
+  public static final int FinFuncion = 59;
+  public static final int TBoolean = 17;
+  public static final int Modulo = 23;
+  public static final int Fin = 34;
+  public static final int Segun = 43;
+  public static final int Hacer = 44;
   public static final int EOF = 0;
-  public static final int ConParametros = 55;
-  public static final int Not = 30;
-  public static final int And = 29;
+  public static final int ConParametros = 57;
+  public static final int Not = 32;
+  public static final int And = 31;
   public static final int error = 1;
-  public static final int Funcion = 56;
-  public static final int False = 19;
-  public static final int Flecha = 13;
-  public static final int Imprimir = 59;
-  public static final int MayorIg = 24;
-  public static final int TChar = 17;
-  public static final int Incremental = 47;
-  public static final int ConValor = 35;
-  public static final int FinPara = 46;
-  public static final int OSi = 40;
-  public static final int DeLoContrario = 39;
-  public static final int TCadena = 16;
-  public static final int MenorIg = 25;
-  public static final int HastaQue = 51;
-  public static final int Entonces = 37;
-  public static final int Inicio = 31;
-  public static final int Identificador = 61;
-  public static final int Si = 36;
+  public static final int Funcion = 58;
+  public static final int False = 21;
+  public static final int Flecha = 15;
+  public static final int Imprimir = 61;
+  public static final int MayorIg = 26;
+  public static final int TChar = 19;
+  public static final int Incremental = 49;
+  public static final int ConValor = 37;
+  public static final int FinPara = 48;
+  public static final int OSi = 42;
+  public static final int DeLoContrario = 41;
+  public static final int TCadena = 18;
+  public static final int MenorIg = 27;
+  public static final int HastaQue = 53;
+  public static final int Entonces = 39;
+  public static final int CAbre = 9;
+  public static final int Inicio = 33;
+  public static final int Identificador = 63;
+  public static final int Si = 38;
   public static final int Resta = 3;
-  public static final int Caracter = 64;
-  public static final int Mientras = 48;
-  public static final int IntCierra = 12;
-  public static final int Como = 34;
-  public static final int Numero = 62;
-  public static final int Hasta = 45;
+  public static final int Caracter = 66;
+  public static final int Mientras = 50;
+  public static final int IntCierra = 14;
+  public static final int Como = 36;
+  public static final int Numero = 64;
+  public static final int Hasta = 47;
   public static final int Suma = 2;
-  public static final int Igual = 26;
-  public static final int FinSegun = 43;
+  public static final int Igual = 28;
+  public static final int FinSegun = 45;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -83,6 +85,8 @@ public class sym {
   "UMenos",
   "PAbre",
   "PCierra",
+  "CAbre",
+  "CCierra",
   "PComa",
   "Coma",
   "IntAbre",
