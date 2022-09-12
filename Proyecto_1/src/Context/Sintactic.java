@@ -8,7 +8,7 @@ package Context;
 import java_cup.runtime.*;
 import Error.ListError;
 import Error.Error;
-import Model.AST;
+import Model.Generator.AST;
 import Model.Components.Expressions.NodeExp;
 import Model.Components.Instruccions.NodeIns;
 import java.util.ArrayList;
@@ -912,7 +912,7 @@ class CUP$Sintactic$actions {
 		Object inst = (Object)((java_cup.runtime.Symbol) CUP$Sintactic$stack.elementAt(CUP$Sintactic$top-1)).value;
 		
             AST.getInstance().setRoot((ArrayList)inst);
-            AST.getInstance().walkTree();
+            AST.getInstance().startWalk();
         
               CUP$Sintactic$result = parser.getSymbolFactory().newSymbol("INICIO",0, ((java_cup.runtime.Symbol)CUP$Sintactic$stack.elementAt(CUP$Sintactic$top-2)), ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), RESULT);
             }
@@ -1201,7 +1201,7 @@ class CUP$Sintactic$actions {
 		int expright = ((java_cup.runtime.Symbol)CUP$Sintactic$stack.elementAt(CUP$Sintactic$top-1)).right;
 		NodeExp exp = (NodeExp)((java_cup.runtime.Symbol) CUP$Sintactic$stack.elementAt(CUP$Sintactic$top-1)).value;
 		
-            NodeIns nodo = new NodeIns("Asignacion");
+            NodeIns nodo = new NodeIns("asignacion");
             nodo.putFeatures("identificadores", idents);
             nodo.putFeatures("valor", exp);
             RESULT = nodo;
@@ -1660,6 +1660,7 @@ class CUP$Sintactic$actions {
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()).right;
 		String val = (String)((java_cup.runtime.Symbol) CUP$Sintactic$stack.peek()).value;
 		
+            val = val.replaceAll("\"", "");
             RESULT = new NodeExp(val);
         
               CUP$Sintactic$result = parser.getSymbolFactory().newSymbol("VALOR",9, ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), RESULT);
@@ -1674,6 +1675,7 @@ class CUP$Sintactic$actions {
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()).right;
 		String val = (String)((java_cup.runtime.Symbol) CUP$Sintactic$stack.peek()).value;
 		
+            val = val.replaceAll("\'", "");
             RESULT = new NodeExp(val);
         
               CUP$Sintactic$result = parser.getSymbolFactory().newSymbol("VALOR",9, ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), RESULT);

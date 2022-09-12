@@ -2,7 +2,7 @@ package Context;
 import java_cup.runtime.*;
 import Error.ListError;
 import Error.Error;
-import Model.AST;
+import Model.Generator.AST;
 import Model.Components.Expressions.NodeExp;
 import Model.Components.Instruccions.NodeIns;
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ start with INICIO;
 INICIO ::= Inicio INSTRUCCIONES:inst Fin
         {:
             AST.getInstance().setRoot((ArrayList)inst);
-            AST.getInstance().walkTree();
+            AST.getInstance().startWalk();
         :}
     ;
 
@@ -176,7 +176,7 @@ DECLARACION ::= Ingresar IDENTIFICADORES:idents Como TIPO_DATO:TD ConValor EXPRE
 
 ASIGNACION ::= IDENTIFICADORES:idents Flecha EXPRESION:exp PComa
         {:
-            NodeIns nodo = new NodeIns("Asignacion");
+            NodeIns nodo = new NodeIns("asignacion");
             nodo.putFeatures("identificadores", idents);
             nodo.putFeatures("valor", exp);
             RESULT = nodo;
@@ -350,10 +350,12 @@ VALOR ::= Numero:val
         :}
     | Cadena:val
         {:
+            val = val.replaceAll("\"", "");
             RESULT = new NodeExp(val);
         :}
     | Caracter:val
         {:
+            val = val.replaceAll("\'", "");
             RESULT = new NodeExp(val);
         :}
     | Identificador:val
@@ -387,9 +389,6 @@ TIPO_DATO ::= TNumero:val
             RESULT = val;
         :}
     ;
-
-
-
 
 CONDICIONAL_SI ::= Si EXPRESION:exp Entonces INSTRUCCIONES:insts FinSi
         {:
@@ -449,10 +448,6 @@ CONDICIONEXTRA ::= OSi EXPRESION:exp Entonces INSTRUCCIONES:insts
             RESULT = nodo;
         :}
     ;
-
-
-
-
 
 SELECCION_MULTIPLE ::= Segun EXPRESION:exp Hacer CASOS:cases FinSegun
         {:
