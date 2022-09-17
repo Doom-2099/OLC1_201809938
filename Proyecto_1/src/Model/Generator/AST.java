@@ -1,5 +1,8 @@
 package Model.Generator;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 import Model.Components.Expressions.NodeExp;
@@ -21,6 +24,38 @@ public class AST {
         this.root = root;
     }
 
+    public String generate_AST_Img() {
+        File directorio = new File("/home/jorge/Escritorio/COMPI/OLC1-201809938/Proyecto_1/src/Dist/Images");
+        File[] files = directorio.listFiles();
+        
+        if(files.length > 0) {
+            for(File file : files) {
+                file.delete();
+            }
+        }
+        
+        try {
+            File astGrafo = new File("src/Dist/Images/AST.dot");
+            if(astGrafo.createNewFile()) {
+                FileWriter fw = new FileWriter(astGrafo);
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(grafo);
+                bw.write(nodos.toString());
+                bw.write(conexiones.toString());
+                bw.write("\n}");
+                bw.close();
+                fw.close();
+                String cmd = "dot -Tpng " + astGrafo.getAbsolutePath() + " -o /home/jorge/Escritorio/COMPI/OLC1-201809938/Proyecto_1/src/Dist/Images/AST.png";
+                Runtime.getRuntime().exec(cmd);
+                return "Generacion Del AST Completada";
+            }
+        } catch (Exception e) {
+            return e.getLocalizedMessage();
+        }
+
+        return "Generacion Del AST Completada";
+    }
+
     public void startWalk() {
         ArrayList<NodeIns> aux = root;
         String padre = "node" + contador++;
@@ -32,11 +67,8 @@ public class AST {
         padre = hijo;
 
         walkTree(aux, padre);
+        
 
-        System.out.println(grafo);
-        System.out.println(nodos.toString());
-        System.out.println(conexiones.toString());
-        System.out.println("}");
     }
 
     public void walkTree(ArrayList<NodeIns> root, String padre) {
@@ -59,6 +91,7 @@ public class AST {
             }
 
             _walkTreeIns(root.get(i), padre);
+            GeneratePy.getInstance().startTraduction(root.get(i));
 
             if (hijoAux != "") {
                 padre = hijoAux;
@@ -70,6 +103,7 @@ public class AST {
     public void _walkTreeIns(NodeIns nodo, String padre) {
         switch (nodo.getInstruccion()) {
             case "declaracion":
+                GeneratePy.getInstance().startTraduction(nodo);
                 String hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"DECLARACION\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -105,6 +139,7 @@ public class AST {
                 break;
 
             case "asignacion":
+                GeneratePy.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"ASIGNACION\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -385,26 +420,26 @@ public class AST {
                 conexiones.append(padre + "->" + hijo + "\n");
 
                 hijo = "node" + contador++;
-                nodos.append(hijo + "[label=\"EXPRESION\"];\n");
+                nodos.append(hijo + "[label=\"VARIABLE\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
 
                 _walkTreeExp((NodeExp) nodo.getPropIns().get("variable"), hijo);
 
                 hijo = "node" + contador++;
-                nodos.append(hijo + "[label=\"EXPRESION\"];\n");
+                nodos.append(hijo + "[label=\"INICIO\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
 
                 _walkTreeExp((NodeExp) nodo.getPropIns().get("inicio"), hijo);
 
                 hijo = "node" + contador++;
-                nodos.append(hijo + "[label=\"EXPRESION\"];\n");
+                nodos.append(hijo + "[label=\"FIN\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
 
                 _walkTreeExp((NodeExp) nodo.getPropIns().get("fin"), hijo);
 
                 if (nodo.getPropIns().get("incremento") != null) {
                     hijo = "node" + contador++;
-                    nodos.append(hijo + "[label=\"EXPRESION\"];\n");
+                    nodos.append(hijo + "[label=\"INCREMENTO\"];\n");
                     conexiones.append(padre + "->" + hijo + "\n");
 
                     _walkTreeExp((NodeExp) nodo.getPropIns().get("incremento"), hijo);
@@ -432,7 +467,7 @@ public class AST {
                 conexiones.append(padre + "->" + hijo + "\n");
 
                 hijo = "node" + contador++;
-                nodos.append(hijo + "[label=\"EXPRESION\"];\n");
+                nodos.append(hijo + "[label=\"CONDICION\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
 
                 _walkTreeExp((NodeExp) nodo.getPropIns().get("condicion"), hijo);
@@ -471,7 +506,7 @@ public class AST {
                 conexiones.append(padre + "->" + hijo + "\n");
 
                 hijo = "node" + contador++;
-                nodos.append(hijo + "[label=\"EXPRESION\"];\n");
+                nodos.append(hijo + "[label=\"CONDICION\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
 
                 _walkTreeExp((NodeExp) nodo.getPropIns().get("condicion"), hijo);
@@ -625,7 +660,7 @@ public class AST {
         switch (exp.getOperacion()) {
             case "M":
                 String hijo = "node" + contador++;
-                nodos.append(hijo + "[label=\"" + exp.getOperacion() + "\"];\n");
+                nodos.append(hijo + "[label=\"-\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
                 _walkTreeExp((NodeExp) exp.getOp1(), hijo);
                 break;
@@ -764,7 +799,7 @@ public class AST {
                     padre = hijo;
 
                     hijo = "node" + contador++;
-                    String[] detalle = exp.getOperacion().split("|");
+                    String[] detalle = exp.getOperacion().split("\\|");
                     nodos.append(hijo + "[label=\"" + detalle[1] + "\"];\n");
                     conexiones.append(padre + "->" + hijo + "\n");
 
@@ -779,9 +814,19 @@ public class AST {
                     }
                 } else {
                     hijo = "node" + contador++;
-                    nodos.append(hijo + "[label=\"" + exp.getOperacion() + "\"];\n");
-                    conexiones.append(padre + "->" + hijo + "\n");
+                    if(exp.getOperacion().contains("\"")) {
+                        nodos.append(hijo + "[label=" + exp.getOperacion() + "];\n");
+                        conexiones.append(padre + "->" + hijo + "\n");
+                    } else if(exp.getOperacion().contains("\'")) {
+                        exp.setOperacion(exp.getOperacion().replace("\'", ""));
+                        nodos.append(hijo + "[label=\"\'" + exp.getOperacion() + "\'\"];\n");
+                        conexiones.append(padre + "->" + hijo + "\n");
+                    } else {
+                        nodos.append(hijo + "[label=\"" + exp.getOperacion() + "\"];\n");
+                        conexiones.append(padre + "->" + hijo + "\n");
+                    }
                 }
+                
                 break;
         }
     }

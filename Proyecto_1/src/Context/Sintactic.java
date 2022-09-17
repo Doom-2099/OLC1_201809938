@@ -1660,7 +1660,6 @@ class CUP$Sintactic$actions {
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()).right;
 		String val = (String)((java_cup.runtime.Symbol) CUP$Sintactic$stack.peek()).value;
 		
-            val = val.replaceAll("\"", "");
             RESULT = new NodeExp(val);
         
               CUP$Sintactic$result = parser.getSymbolFactory().newSymbol("VALOR",9, ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), RESULT);
@@ -1675,7 +1674,6 @@ class CUP$Sintactic$actions {
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()).right;
 		String val = (String)((java_cup.runtime.Symbol) CUP$Sintactic$stack.peek()).value;
 		
-            val = val.replaceAll("\'", "");
             RESULT = new NodeExp(val);
         
               CUP$Sintactic$result = parser.getSymbolFactory().newSymbol("VALOR",9, ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), RESULT);

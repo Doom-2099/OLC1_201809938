@@ -16,9 +16,12 @@ import Context.Lex;
 import Context.Sintactic;
 import Error.Error;
 import Error.ListError;
+import Model.Generator.AST;
+import Model.Generator.GeneratePy;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
@@ -110,7 +113,7 @@ public class ControllerHome implements Initializable {
             try{
                 Sintactic s = new Sintactic(new Lex(new StringReader(textArea.getText())));
                 s.parse();
-
+                
                 if(!ListError.getInstance().isEmpty()) {
                     ArrayList<Error> errors = ListError.getInstance().getListError();
                     countErrors.setText(errors.size() + " Errores");
@@ -121,6 +124,13 @@ public class ControllerHome implements Initializable {
 
                 } else {
                     countErrors.setText("0 Errores");
+                    String message = AST.getInstance().generate_AST_Img();
+                    message += "\n" + GeneratePy.getInstance().printTraduction();
+                    if(!message.contains("AST")) {
+                        alertError(message, "Error AST", "Error");
+                    } else {
+                        alertInformation(message, "Generacion AST", "Informacion");
+                    }
                 }
             } catch(Exception err) {
                 System.out.println(err);
@@ -159,6 +169,23 @@ public class ControllerHome implements Initializable {
         saveText();
         textArea.setText(codeOutGolang);
         setFlags(3);
+    }
+
+    @FXML
+    private void alertError(String message, String title, String header) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(header);
+        alert.setTitle(title);
+        alert.setContentText("Ocurrio Un Error En La Generacion Del AST\n" + message);
+        alert.showAndWait();
+    }
+
+    @FXML void alertInformation(String message, String title, String header) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(header);
+        alert.setTitle(title);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void setFlags(int valor) {

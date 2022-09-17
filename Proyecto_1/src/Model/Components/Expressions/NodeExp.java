@@ -12,6 +12,7 @@ public class NodeExp {
         this.operacion = operacion;
         this.op1 = null;
         this.op2 = null;
+        this.parametros = null;
     }
 
     public String getOperacion() {

@@ -41,13 +41,13 @@ def main():
 	if _varB_ :
 		print("Estas definiendo bien los valores")
 		_varaux_ = _variable1_ % 2
-
+		
 		#simulando el switch
 		if _varaux_ == 0:
 			print("el valor es mayor a 0 y menos a 2")
 		elif _varaux_ == 2:
 			print("el valor es mayor a 2")
-		
+			
 	_metodo_1_()
 
 if __name__ == "__main__":

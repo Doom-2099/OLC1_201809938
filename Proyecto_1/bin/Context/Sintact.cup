@@ -350,12 +350,10 @@ VALOR ::= Numero:val
         :}
     | Cadena:val
         {:
-            val = val.replaceAll("\"", "");
             RESULT = new NodeExp(val);
         :}
     | Caracter:val
         {:
-            val = val.replaceAll("\'", "");
             RESULT = new NodeExp(val);
         :}
     | Identificador:val
