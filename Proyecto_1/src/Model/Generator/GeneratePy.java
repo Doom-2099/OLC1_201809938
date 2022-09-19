@@ -116,16 +116,18 @@ public class GeneratePy {
                     instruccion += id;
                 }
 
-                instruccion += " = ";
+                if(nodo.getPropIns().get("valor") != null) {
+                    instruccion += " = ";
 
-                for(int i = 0; i < ids.size(); i++) {
-                    instruccion += getExp((NodeExp)nodo.getPropIns().get("valor"));
+                    for(int i = 0; i < ids.size(); i++) {
+                        instruccion += getExp((NodeExp)nodo.getPropIns().get("valor"));
 
-                    if((i + 1) < ids.size()) {
-                        instruccion += ", ";
+                        if((i + 1) < ids.size()) {
+                            instruccion += ", ";
+                        }
                     }
                 }
-
+                
                 instruccion += "\n";
                 addText(instruccion);
                 break;
@@ -142,29 +144,31 @@ public class GeneratePy {
                     instruccion += id;
                 }
 
-                instruccion += " = ";
+                if(nodo.getPropIns().get("valor") != null) {
+                    instruccion += " = ";
 
-                for(int i = 0; i < ids.size(); i++) {
-                    instruccion += getExp((NodeExp)nodo.getPropIns().get("valor"));
+                    for(int i = 0; i < ids.size(); i++) {
+                        instruccion += getExp((NodeExp)nodo.getPropIns().get("valor"));
 
-                    if((i + 1) < ids.size()) {
-                        instruccion += ", ";
+                        if((i + 1) < ids.size()) {
+                            instruccion += ", ";
+                        }
                     }
                 }
-
+                
                 instruccion += "\n";
                 addText(instruccion);
                 break;
             
             case "if-simple":
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
                 addText(instruccion);
                 ambito++;
                 break;
 
             case "if-else":
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
                 addText(instruccion);
                 ambito++;
@@ -178,14 +182,14 @@ public class GeneratePy {
                 break;
 
             case "if-elif":
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
                 addText(instruccion);
                 ambito++;
                 break;
 
             case "if-elif-else":
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
                 addText(instruccion);
                 ambito++;
@@ -206,7 +210,7 @@ public class GeneratePy {
 
             case "case":
                 if(instruccion == "" && !flagSwitch) {
-                    instruccion = generateTabs();
+                    instruccion = "\n" + generateTabs();
                     instruccion += "if " + var + " == " + getExp((NodeExp)nodo.getPropIns().get("expresion")) + ":\n";
                     ambito++;
                     flagSwitch = !flagSwitch;
@@ -226,7 +230,7 @@ public class GeneratePy {
                 break;
 
             case "for":
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "for " + getExp((NodeExp)nodo.getPropIns().get("variable")) + " ";
                 instruccion += "in range(" + getExp((NodeExp)nodo.getPropIns().get("inicio")) + ",";
                 instruccion += getExp((NodeExp)nodo.getPropIns().get("fin"));
@@ -241,21 +245,21 @@ public class GeneratePy {
                 break;
 
             case "while": // while contador < 10:
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "while " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + ":\n";
                 addText(instruccion);
                 ambito++;
                 break;
 
             case "doWhile":
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "while True:\n";
                 addText(instruccion);
                 ambito++;
                 break;
 
             case "doWhileEnd":
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + ":\n";
                 ambito++;
                 instruccion += generateTabs() + "break\n";

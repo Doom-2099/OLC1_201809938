@@ -116,9 +116,57 @@ public class ControllerHome implements Initializable {
                     ArrayList<Error> errors = ListError.getInstance().getListError();
                     countErrors.setText(errors.size() + " Errores");
 
-                    for(int i = 0; i < errors.size(); i++) {
-                        System.out.println(errors.get(i).getMsg());
+                    File file = new File(pathfile);
+                    FileReader fr = new FileReader(file);
+                    BufferedReader br = new BufferedReader(fr);
+                    String linea = "";
+                    int contador = 1;
+                    int index = 0;
+
+                    while((linea = br.readLine()) != null) {
+                        if(index < errors.size()){
+                            if(contador == errors.get(index).getLine()) {
+                                while (true) {
+                                    if(index >= errors.size()) {
+                                        break;
+                                    } else if(errors.get(index).getLine() != contador) {
+                                        break;
+                                    } else {
+                                        int aux = 0;
+                                        for(int x = 0; x < linea.length(); x++) {
+                                            if(linea.charAt(x) == '\t') {
+                                                aux++;
+                                            }
+                                        }
+
+                                        erroresTxt += "\n-------------------------------\n";
+                                        erroresTxt += linea + "\n";
+                                        erroresTxt += getTabs(aux) + getSpaces(errors.get(index).getColumn()) + "^\n";
+                                        erroresTxt += getTabs(aux) + getSpaces(errors.get(index).getColumn()) + "|\n";
+                                        erroresTxt += getTabs(aux) + getSpaces(errors.get(index).getColumn()) + errors.get(index).getType() + "\n";
+                                        erroresTxt += errors.get(index).getMsg().replace("\n", " ") + "\n";
+                                        erroresTxt += "\n-------------------------------\n";
+                                        index++;
+                                    }
+                                }
+                            } else {
+                                erroresTxt += linea + "\n";
+                            }
+                        } else {
+                            erroresTxt += linea + "\n";
+                        }
+                        contador++;
                     }
+
+                    br.close();
+                    fr.close();
+                    generateErrorFile();
+                    String message = "Error En La Traduccion";
+                    message += "\nEl Archivo De Entrada Tiene Errores";
+                    message += "\nEl Archivo Con El Reporte Se Ha Generado";
+                    message += "\nVer Carpeta /src/Error/Log";
+                    alertError(message, "Error", "Error");
+
                 } else {
                     countErrors.setText("0 Errores");
                     String message = AST.getInstance().generate_AST_Img();
@@ -153,8 +201,12 @@ public class ControllerHome implements Initializable {
                 }
             } catch(Exception err) {
                 System.out.println(err);
-                System.out.println(err.getLocalizedMessage());
-                System.out.println(err.getStackTrace().toString());
+                StackTraceElement[] s = err.getStackTrace();
+                System.out.println("---------------------------------");
+                System.out.println(s[0].getFileName());
+                System.out.println(s[0].getMethodName());
+                System.out.println(s[0].getLineNumber());
+                System.out.println("---------------------------------");
             }
         }
     }
@@ -204,7 +256,7 @@ public class ControllerHome implements Initializable {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText(header);
         alert.setTitle(title);
-        alert.setContentText("Ocurrio Un Error En La Generacion Del AST\n" + message);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 
@@ -254,6 +306,55 @@ public class ControllerHome implements Initializable {
             codeOutPython = textArea.getText();
         } else if(flagErrors) {
             erroresTxt = textArea.getText();
+        }
+    }
+
+    private String getSpaces(int spaces) {
+        String space = "";
+        for(int i = 0; i < (spaces - 3); i++) {
+            space += " ";
+        }
+        return space;
+    }
+
+    private String getTabs(int tabsNum) {
+        String tabs = "";
+        for(int i = 0; i < tabsNum; i++) {
+            tabs += "\t";
+        }
+
+        return tabs;
+    }
+
+    private void generateErrorFile() {
+        File directorio = new File("/home/jorge/Escritorio/COMPI/OLC1-201809938/Proyecto_1/src/Error/Log/");
+        File[] files = directorio.listFiles();
+
+        if(files.length > 0) {
+            for(File file : files) {
+                file.delete();
+            }
+        }
+
+        try {
+            File docError = new File("src/Error/Log/out.txt");
+            if(docError.createNewFile()) {
+                FileWriter fw = new FileWriter(docError);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write(erroresTxt);
+
+                bw.close();
+                fw.close();
+            }
+        } catch (Exception err) {
+            System.out.println(err);
+            StackTraceElement[] s = err.getStackTrace();
+            System.out.println("---------------------------------");
+            System.out.println(s[0].getFileName());
+            System.out.println(s[0].getMethodName());
+            System.out.println(s[0].getLineNumber());
+            System.out.println("---------------------------------");
         }
     }
 

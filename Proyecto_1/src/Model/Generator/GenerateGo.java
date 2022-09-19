@@ -142,7 +142,13 @@ public class GenerateGo {
                 return "Documento Golang Generado";
             }
         } catch (IOException err) {
-            return err.getLocalizedMessage();
+            System.out.println(err);
+            StackTraceElement[] s = err.getStackTrace();
+            System.out.println("---------------------------------");
+            System.out.println(s[0].getFileName());
+            System.out.println(s[0].getMethodName());
+            System.out.println(s[0].getLineNumber());
+            System.out.println("---------------------------------");
         }
 
         return "Documento Golang Generado";
@@ -163,13 +169,17 @@ public class GenerateGo {
                     instruccion += id;
                 }
 
-                instruccion += " " + getTipoDato((String)nodo.getPropIns().get("tipoDato")) + " = ";
+                instruccion += " " + getTipoDato((String)nodo.getPropIns().get("tipoDato"));
 
-                for(int i = 0; i < ids.size(); i++) {
-                    instruccion += getExp((NodeExp)nodo.getPropIns().get("valor"));
-
-                    if((i + 1) < ids.size()) {
-                        instruccion += ", ";
+                if(nodo.getPropIns().get("valor") != null) {
+                    instruccion += " = ";
+                    
+                    for(int i = 0; i < ids.size(); i++) {
+                        instruccion += getExp((NodeExp)nodo.getPropIns().get("valor"));
+    
+                        if((i + 1) < ids.size()) {
+                            instruccion += ", ";
+                        }
                     }
                 }
 
@@ -181,56 +191,56 @@ public class GenerateGo {
                 ids = (ArrayList)nodo.getPropIns().get("identificadores");
 
                 for(String id : ids) {
-                    instruccion += generateTabs() + "var " + id + " = " + getExp((NodeExp)nodo.getPropIns().get("valor")) + "\n";
+                    if(nodo.getPropIns().get("valor") == null) {
+                        instruccion += generateTabs() + "var " + id + "\n";    
+                    } else {
+                        instruccion += generateTabs() + "var " + id + " = " + getExp((NodeExp)nodo.getPropIns().get("valor")) + "\n";   
+                    }
                 }
 
                 addText(instruccion);
                 break;
             
             case "if-simple":
-                instruccion = generateTabs() + "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " {\n";
+                instruccion = "\n" + generateTabs() + "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " {\n";
                 addText(instruccion);
                 ambito++;
                 break;
 
             case "if-else":
-                instruccion = generateTabs();
-                instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " {\n";
+                instruccion = "\n" + generateTabs() + "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " {\n";
                 addText(instruccion);
                 ambito++;
                 break;
 
             case "if-elif":
-                instruccion = generateTabs();
-                instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " {\n";
+                instruccion = "\n" + generateTabs() + "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " {\n";
                 addText(instruccion);
                 ambito++;
                 break;
 
             case "else":
                 instruccion = generateTabs();
-                instruccion += "} else {\n";
+                instruccion += " else {\n";
                 addText(instruccion);
                 ambito++;
                 break;
 
             case "if-elif-else":
-                instruccion = generateTabs();
-                instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " {\n";
+                instruccion = "\n" + generateTabs() + "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " {\n";
                 addText(instruccion);
                 ambito++;
                 break;
 
             case "elif":
                 instruccion = generateTabs();
-                instruccion += "} else " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " {\n";
+                instruccion += " else if {" + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " {\n";
                 addText(instruccion);
                 ambito++;
                 break;
 
             case "switch":
-                instruccion = generateTabs();
-                instruccion += "switch " + getExp((NodeExp)nodo.getPropIns().get("variable")) + " {\n";
+                instruccion = "\n" + generateTabs() + "switch " + getExp((NodeExp)nodo.getPropIns().get("variable")) + " {\n";
                 addText(instruccion);
                 ambito++;
                 break;
@@ -252,7 +262,7 @@ public class GenerateGo {
                 break;
 
             case "for":
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "for " + getExp((NodeExp)nodo.getPropIns().get("variable")) + ":=" + getExp((NodeExp)nodo.getPropIns().get("inicio")) + "; ";
                 instruccion += getExp((NodeExp)nodo.getPropIns().get("variable")) + " < " + getExp((NodeExp)nodo.getPropIns().get("fin")) + "; ";
 
@@ -267,10 +277,10 @@ public class GenerateGo {
                 break;
 
             case "while":
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "for true {\n";
                 ambito++;
-                instruccion += generateTabs();
+                instruccion += "\n" + generateTabs();
                 instruccion += "if !(" + getExp((NodeExp)nodo.getPropIns().get("condicion")) + ") {\n";
                 ambito++;
                 instruccion += generateTabs() + "break\n";  
@@ -281,10 +291,10 @@ public class GenerateGo {
                 break;
 
             case "doWhile":
-                instruccion = generateTabs();
+                instruccion = "\n" + generateTabs();
                 instruccion += "for true {\n";
                 ambito++;
-                instruccion += generateTabs() + "if (" + getExp((NodeExp)nodo.getPropIns().get("condicion")) + "){\n";
+                instruccion += generateTabs() + "\nif (" + getExp((NodeExp)nodo.getPropIns().get("condicion")) + "){\n";
                 ambito++;
                 instruccion += generateTabs() + "break\n";
                 ambito--;
@@ -456,6 +466,12 @@ public class GenerateGo {
                     expresion += ")";
                     return expresion;
                 }
+
+                if(nodo.getOperacion().equals("falso")) {
+                    return "false";
+                } else if(nodo.getOperacion().equals("verdadero")) {
+                    return "true";
+                } 
 
                 return nodo.getOperacion();
         }

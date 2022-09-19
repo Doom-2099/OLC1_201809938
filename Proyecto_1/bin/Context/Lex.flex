@@ -100,15 +100,29 @@ SL = [\n]+
 {ID}                {return new Symbol(sym.Identificador, (int)yychar, yyline, yytext());}
 {NUM}               {return new Symbol(sym.Numero, (int)yychar, yyline, yytext());}
 {ESP}               {}
-{CADENA}            {return new Symbol(sym.Cadena, (int)yychar, yyline, yytext());}
+{CADENA}            {
+                        if(yytext().contains("\n")) {
+                            String cadena = yytext();
+                            cadena = cadena.replace("\n", "\\n");
+                            return new Symbol(sym.Cadena, (int)yychar, yyline, cadena);
+                        }
+
+                        return new Symbol(sym.Cadena, (int)yychar, yyline, yytext());
+                    }
 {CARACTER}          {
                         if(yytext().contains("$")) {
-                            String cadena = yytext().replaceAll("$", "");
+                            String cadena = yytext();
+                            cadena = cadena.replace("$", "");
                             cadena = cadena.replace("{", "");
                             cadena = cadena.replace("}", "");
+                            cadena = cadena.replace("\'", "");
                             int ascii = Integer.parseInt(cadena);
+                            if(!((ascii > 65 && ascii < 90) || (ascii > 97 && ascii < 122))) {
+                                return new Symbol(sym.error, (int)yychar, yyline, yytext());
+                            }
                             char caracter = (char) ascii;
                             cadena = String.valueOf(caracter);
+                            cadena = "\'" + cadena + "\'";
                             return new Symbol(sym.Caracter, (int)yychar, yyline, cadena);
                         }
                         return new Symbol(sym.Caracter, (int)yychar, yyline, yytext());

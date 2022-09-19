@@ -925,7 +925,13 @@ public class Lex implements java_cup.runtime.Scanner {
             // fall through
           case 83: break;
           case 17:
-            { return new Symbol(sym.Cadena, (int)yychar, yyline, yytext());
+            { if(yytext().contains("\n")) {
+                            String cadena = yytext();
+                            cadena = cadena.replace("\n", "\\n");
+                            return new Symbol(sym.Cadena, (int)yychar, yyline, cadena);
+                        }
+
+                        return new Symbol(sym.Cadena, (int)yychar, yyline, yytext());
             }
             // fall through
           case 84: break;
@@ -952,6 +958,9 @@ public class Lex implements java_cup.runtime.Scanner {
                             cadena = cadena.replace("}", "");
                             cadena = cadena.replace("\'", "");
                             int ascii = Integer.parseInt(cadena);
+                            if(!((ascii > 65 && ascii < 90) || (ascii > 97 && ascii < 122))) {
+                                return new Symbol(sym.error, (int)yychar, yyline, yytext());
+                            }
                             char caracter = (char) ascii;
                             cadena = String.valueOf(caracter);
                             cadena = "\'" + cadena + "\'";

@@ -847,25 +847,21 @@ public class Sintactic extends java_cup.runtime.lr_parser {
 
 
     public void syntax_error(Symbol s) {
-        if(s.value != null){
-            String msg = "Error Sintactico No Recuperable\n"
-            + "En la linea: " + s.right + "\n"
-            + "En la columna: " + s.left + "\n"
-            + "Lexema: " + s.value + "\n";
+        String msg = "Error Sintactico No Recuperable\n"
+        + "En la linea: " + s.right + "\n"
+        + "En la columna: " + s.left + "\n"
+        + "Lexema: " + s.value + "\n";
 
-            ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
-        }
+        ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
     }
 
     public void unrecovered_syntax_error(Symbol s){
-        if(s.value != null){
-            String msg = "Error Sintactico No Recuperable\n"
-            + "En la linea: " + s.right + "\n"
-            + "En la columna: " + s.left + "\n"
-            + "Lexema: " + s.value + "\n";
+        String msg = "Error Sintactico No Recuperable\n"
+        + "En la linea: " + s.right + "\n"
+        + "En la columna: " + s.left + "\n"
+        + "Lexema: " + s.value + "\n";
 
-            ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
-        }
+        ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
     }
 
 
@@ -933,9 +929,15 @@ class CUP$Sintactic$actions {
 		int instruccionesright = ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()).right;
 		Object instrucciones = (Object)((java_cup.runtime.Symbol) CUP$Sintactic$stack.peek()).value;
 		
-            ArrayList<NodeIns> _instrucciones = (ArrayList) instrucciones;
-            _instrucciones.add(0, (NodeIns)inst);
-            RESULT = _instrucciones;
+            if(instrucciones == null) {
+              ArrayList<NodeIns> _instrucciones = new ArrayList<>();
+              _instrucciones.add(0, (NodeIns)inst);
+              RESULT = _instrucciones;
+            } else {
+              ArrayList<NodeIns> _instrucciones = (ArrayList) instrucciones;
+              _instrucciones.add(0, (NodeIns)inst);
+              RESULT = _instrucciones;
+            }
         
               CUP$Sintactic$result = parser.getSymbolFactory().newSymbol("INSTRUCCIONES",1, ((java_cup.runtime.Symbol)CUP$Sintactic$stack.elementAt(CUP$Sintactic$top-1)), ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), RESULT);
             }
@@ -950,7 +952,7 @@ class CUP$Sintactic$actions {
 		Object inst = (Object)((java_cup.runtime.Symbol) CUP$Sintactic$stack.peek()).value;
 		
             ArrayList<NodeIns> instrucciones = new ArrayList<>();
-            instrucciones.add(0, (NodeIns)inst);
+            instrucciones.add((NodeIns)inst);
             RESULT = instrucciones;
         
               CUP$Sintactic$result = parser.getSymbolFactory().newSymbol("INSTRUCCIONES",1, ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactic$stack.peek()), RESULT);
@@ -2516,7 +2518,7 @@ class CUP$Sintactic$actions {
 		int expleft = ((java_cup.runtime.Symbol)CUP$Sintactic$stack.elementAt(CUP$Sintactic$top-1)).left;
 		int expright = ((java_cup.runtime.Symbol)CUP$Sintactic$stack.elementAt(CUP$Sintactic$top-1)).right;
 		NodeExp exp = (NodeExp)((java_cup.runtime.Symbol) CUP$Sintactic$stack.elementAt(CUP$Sintactic$top-1)).value;
-		
+		 
             NodeIns nodo = new NodeIns("imprimir");
             nodo.putFeatures("expresion", exp);
             RESULT = nodo;

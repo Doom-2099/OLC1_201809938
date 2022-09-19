@@ -48,6 +48,12 @@ ingresar _operacionRela6_ como Boolean con_valor _operaciones1Basica_ es_iguAl _
 ingresar _operacionRela7_ como boolEan con_valor _operaciones1Basica_ es_igual (_operaciones1Basica_)*(8+5);
 ingresar _operacionRela5_ como bOoleAn con_valor _operaciones1Basica_ es_diferente _operaciones1Basica_;
 
+ingresar _operLogica_ como boolean;
+
+ingresar _encabezado2_    como cadena con_valor "Escuela de Ciencias y Sistemas
+Segundo semestre
+";
+
 _v1_ 						   -> "esta es la cadena numero 1";
 _v2_, _v3_                     -> "estas cadenas deben ser diferentes";
 _curso1_, _curso2_,_curso3_  -> "Organizacion de lenguajes y compiladores 1";
