@@ -16,17 +16,15 @@ public class GeneratePy {
         return instance;
     }
 
+    private String var = "";
     private int ambito = 1;
+    private int ambitoAux = 1;
     private boolean flagMain = true;
     private boolean flagMethod = false;
+    private boolean flagSwitch = false;
     StringBuilder contentMain = new StringBuilder();
     StringBuilder contentMethod = new StringBuilder();
     ArrayList<StringBuilder> methods = new ArrayList<>();
-
-    private void changeflag() {
-        this.flagMain = !flagMain;
-        this.flagMethod = !flagMethod;
-    }
 
     private void addText(String instruccion) {
         if(flagMain) {
@@ -36,10 +34,28 @@ public class GeneratePy {
         }
     }
 
-    private String generateTabs() {
+    public void changeflag() {
+        if(flagMethod) {
+            methods.add(contentMethod);
+            contentMethod = new StringBuilder();
+            ambito = ambitoAux;
+        } else {
+            ambitoAux = ambito;
+            ambito = 1;
+        }
+
+        this.flagMain = !flagMain;
+        this.flagMethod = !flagMethod;
+    }
+
+    public void restAmbit() {
+        ambito--;
+    }
+
+    private String generateTabs(){
         String tabs = "";
 
-        for(int i = 0; i <= ambito; i++) {
+        for(int i = 0; i < ambito; i++) {
             tabs += "\t";
         }
 
@@ -52,7 +68,9 @@ public class GeneratePy {
 
         if(files.length > 0) {
             for(File file : files) {
-                file.delete();
+                if(!file.getName().equals("README.md")){
+                    file.delete();
+                }
             }
         }
 
@@ -64,9 +82,14 @@ public class GeneratePy {
                 
                 for(StringBuilder method : methods) {
                     bw.write(method.toString());
+                    bw.write("\n");
                 }
 
+                bw.write("\n");
+                bw.write("def main():\n");
                 bw.write(contentMain.toString());
+                bw.write("\n\n");
+                bw.write("if __name__ == \"__main__\":\n\tmain()");
                 bw.close();
                 fw.close();
                 return "Documento Python Generado";
@@ -77,16 +100,17 @@ public class GeneratePy {
 
         return "Documento Python Generado";
     }
-
+    
     public void startTraduction(NodeIns nodo) {
         String instruccion = "";
         switch (nodo.getInstruccion()) {
             case "declaracion":
                 ArrayList<String> ids = (ArrayList)nodo.getPropIns().get("identificadores");
-                instruccion = "\n" + generateTabs();
                 for(String id : ids) {
                     if(instruccion != "") {
                         instruccion += ", ";
+                    } else {
+                        instruccion += generateTabs();
                     }
 
                     instruccion += id;
@@ -107,11 +131,12 @@ public class GeneratePy {
                 break;
 
             case "asignacion":
-                instruccion = "\n" + generateTabs();
                 ids = (ArrayList)nodo.getPropIns().get("identificadores");
                 for(String id : ids) {
                     if(instruccion != "") {
                         instruccion += ", ";
+                    } else {
+                        instruccion += generateTabs();
                     }
 
                     instruccion += id;
@@ -132,180 +157,78 @@ public class GeneratePy {
                 break;
             
             case "if-simple":
-                instruccion = "\n" + generateTabs();
-                instruccion = "if ";
-                instruccion += getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
+                instruccion = generateTabs();
+                instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
                 addText(instruccion);
                 ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns>instrucciones = (ArrayList)nodo.getInstrucciones();
-
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-                
-                ambito--;
                 break;
 
             case "if-else":
-                instruccion = "\n" + generateTabs();
-                instruccion = "if ";
-                instruccion += getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
+                instruccion = generateTabs();
+                instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
                 addText(instruccion);
                 ambito++;
+                break;
 
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns>instrucciones = (ArrayList)nodo.getInstrucciones();
-
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-
-                ambito--;
-                instruccion = "\n" + generateTabs();
+            case "else":
+                instruccion = generateTabs();
                 instruccion += "else:\n";
-                NodeIns nodoaux = (NodeIns) nodo.getPropIns().get("else");
                 addText(instruccion);
                 ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns>instrucciones = (ArrayList)nodo.getInstrucciones();
-
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-
-                ambito--;
                 break;
 
             case "if-elif":
-                instruccion = "\n" + generateTabs();
-                instruccion += "if ";
-                instruccion += getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
+                instruccion = generateTabs();
+                instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
                 addText(instruccion);
                 ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns>instrucciones = (ArrayList)nodo.getInstrucciones();
-
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-
-                ambito--;
-                if(nodo.getPropIns().get("elif") != null) {
-                    nodoaux = (NodeIns) nodo.getPropIns().get("elif");
-                    startTraduction(nodoaux);
-                }
-
                 break;
 
             case "if-elif-else":
-                instruccion = "\n" + generateTabs();
-                instruccion += "if ";
-                instruccion += getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
+                instruccion = generateTabs();
+                instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
                 addText(instruccion);
                 ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns> instrucciones = (ArrayList)nodo.getInstrucciones();
-
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-
-                ambito--;
-                if(nodo.getPropIns().get("elif") != null) {
-                    nodoaux = (NodeIns) nodo.getPropIns().get("elif");
-                    startTraduction(nodoaux);
-                }
-
-                instruccion = "\n" + generateTabs();
-                instruccion += "else:\n";
-                nodoaux = (NodeIns) nodo.getPropIns().get("else");
-                addText(instruccion);
-                ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns> instrucciones = (ArrayList)nodo.getInstrucciones();
-
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-
-                ambito--;
                 break;
 
             case "elif":
-                instruccion = "\n" + generateTabs();
-                instruccion += "elif ";
-                instruccion += getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
+                instruccion = generateTabs();
+                instruccion += "elif " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + " :\n";
                 addText(instruccion);
                 ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns> instrucciones = (ArrayList)nodo.getInstrucciones();
-
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-
-                ambito--;
-                if(nodo.getPropIns().get("elif") != null) {
-                    nodoaux = (NodeIns) nodo.getPropIns().get("elif");
-                    startTraduction(nodoaux);
-                }
-
                 break;
 
             case "switch":
+                flagSwitch = false;
                 instruccion = "";
-                String var = getExp((NodeExp) nodo.getPropIns().get("variable"));
-                ArrayList<NodeIns> casos = (ArrayList)nodo.getPropIns().get("casos");
-                for(NodeIns caso : casos) {
-                    if(instruccion == "") {
-                        instruccion = "\n" + generateTabs();
-                        instruccion += "if " + var + " == " + getExp((NodeExp)caso.getPropIns().get("expresion")) + ":\n";
-                    } else {
-                        if(caso.getInstruccion().equals("case")) {
-                            instruccion += "elif " + var + " == " + getExp((NodeExp)caso.getPropIns().get("expresion")) + ":\n";
-                        } else {
-                            instruccion += "else:\n";
-                        }
-                    }
+                var = getExp((NodeExp) nodo.getPropIns().get("variable"));
+                break;
 
-                    addText(instruccion);
-
-                    if(nodo.getInstrucciones() != null) {
-                        ArrayList<NodeIns> instrucciones = (ArrayList)nodo.getInstrucciones();
+            case "case":
+                if(instruccion == "" && !flagSwitch) {
+                    instruccion = generateTabs();
+                    instruccion += "if " + var + " == " + getExp((NodeExp)nodo.getPropIns().get("expresion")) + ":\n";
+                    ambito++;
+                    flagSwitch = !flagSwitch;
+                } else {
+                    if(nodo.getInstruccion().equals("case")) {
+                        instruccion = generateTabs();
+                        instruccion += "elif " + var + " == " + getExp((NodeExp)nodo.getPropIns().get("expresion")) + ":\n";
                         ambito++;
-
-                        for(NodeIns inst : instrucciones) {
-                            startTraduction(inst);
-                        }
-
-                        ambito--;
+                    } else {
+                        instruccion = generateTabs();
+                        instruccion += "else:\n";
+                        ambito++;
                     }
-
-                    instruccion = "\n" + generateTabs();
                 }
 
+                addText(instruccion);
                 break;
 
             case "for":
-                instruccion = "\n" + generateTabs();
-                instruccion += "for ";
-                instruccion += getExp((NodeExp)nodo.getPropIns().get("variable")) + " ";
-                instruccion += " in range( ";
-                instruccion += getExp((NodeExp)nodo.getPropIns().get("inicio")) + ",";
+                instruccion = generateTabs();
+                instruccion += "for " + getExp((NodeExp)nodo.getPropIns().get("variable")) + " ";
+                instruccion += "in range(" + getExp((NodeExp)nodo.getPropIns().get("inicio")) + ",";
                 instruccion += getExp((NodeExp)nodo.getPropIns().get("fin"));
 
                 if(nodo.getPropIns().get("incremento") != null) {
@@ -315,62 +238,33 @@ public class GeneratePy {
                 instruccion += "):\n";
                 addText(instruccion);
                 ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns> instrucciones = (ArrayList)nodo.getInstrucciones();
-
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-
-                ambito--;
                 break;
 
             case "while": // while contador < 10:
-                instruccion = "\n" + generateTabs();
-                instruccion += "while ";
-                instruccion += getExp((NodeExp)nodo.getPropIns().get("condicion")) + ":\n";
+                instruccion = generateTabs();
+                instruccion += "while " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + ":\n";
                 addText(instruccion);
                 ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns> instrucciones = (ArrayList)nodo.getInstrucciones();
-
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-                
-                ambito--;
                 break;
 
             case "doWhile":
-                instruccion = "\n" + generateTabs();
-                instruccion = "while True:\n";
+                instruccion = generateTabs();
+                instruccion += "while True:\n";
                 addText(instruccion);
                 ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns> instrucciones = (ArrayList)nodo.getInstrucciones();
-
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-
-                ambito--;
-                instruccion = "\n" + generateTabs();
-                instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + ":\n";
-                instruccion += "\n" + generateTabs() + "\tbreak\n";
-                addText(instruccion);
                 break;
+
+            case "doWhileEnd":
+                instruccion = generateTabs();
+                instruccion += "if " + getExp((NodeExp)nodo.getPropIns().get("condicion")) + ":\n";
+                ambito++;
+                instruccion += generateTabs() + "break\n";
+                ambito--;
 
             case "declaracion_metodo":
                 changeflag();
                 instruccion = "def ";
                 instruccion += nodo.getPropIns().get("id") + " (";
-                ambito = 1;
 
                 if(nodo.getPropIns().get("parametros") != null) {
                     ArrayList<String> params = (ArrayList)nodo.getPropIns().get("parametros");
@@ -387,19 +281,6 @@ public class GeneratePy {
 
                 instruccion += "):\n";
                 addText(instruccion);
-                ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns> instrucciones = (ArrayList)nodo.getInstrucciones();
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-
-                ambito--;
-                changeflag();
-                methods.add(contentMethod);
-                contentMethod = new StringBuilder();
                 break;
 
             case "declaracion_funcion":
@@ -422,25 +303,12 @@ public class GeneratePy {
                 }
 
                 instruccion += "):\n";
-                ambito++;
-
-                if(nodo.getInstrucciones() != null) {
-                    ArrayList<NodeIns> instrucciones = (ArrayList)nodo.getInstrucciones();
-                    for(NodeIns inst : instrucciones) {
-                        startTraduction(inst);
-                    }
-                }
-
-                ambito--;
-                changeflag();
-                methods.add(contentMethod);
-                contentMethod = new StringBuilder();
+                addText(instruccion);
                 break;
 
             case "ejecutar":
-                instruccion = "\n" + generateTabs();
+                instruccion = generateTabs();
                 instruccion += (String)nodo.getPropIns().get("id") + "(";
-                
                 if(nodo.getPropIns().get("parametros") != null) {
                     ArrayList<NodeExp> params = (ArrayList)nodo.getPropIns().get("parametros");
 
@@ -452,26 +320,25 @@ public class GeneratePy {
                     }
                 }
 
-                instruccion += ")";
+                instruccion += ")\n";
                 addText(instruccion);
                 break;
 
             case "imprimir":
-                instruccion = "\n" + generateTabs();
-                instruccion += "print(" + getExp((NodeExp)nodo.getPropIns().get("expresion")) + ")";
+                instruccion = generateTabs();
+                instruccion += "print(" + getExp((NodeExp)nodo.getPropIns().get("expresion")) + ")\n";
                 addText(instruccion);
                 break;
 
             case "imprimir_nl":
-                instruccion = "\n" + generateTabs();
-                instruccion += "print(" + getExp((NodeExp)nodo.getPropIns().get("expresion")) + ")";
+                instruccion = generateTabs();
+                instruccion += "print(" + getExp((NodeExp)nodo.getPropIns().get("expresion")) + ")\n";
                 addText(instruccion);
                 break;
 
             case "return":
-                instruccion = "\n" + generateTabs();
-                instruccion += "return ";
-                instruccion += getExp((NodeExp)nodo.getPropIns().get("expresion"));
+                instruccion = generateTabs();
+                instruccion += "return " + getExp((NodeExp)nodo.getPropIns().get("expresion")) + "\n";
                 addText(instruccion);
                 break;
         }
@@ -550,6 +417,12 @@ public class GeneratePy {
                     expresion += ")";
                     return expresion;
                 }
+                
+                if(nodo.getOperacion().equals("falso")) {
+                    return "False";
+                } else if(nodo.getOperacion().equals("verdadero")) {
+                    return "True";
+                } 
 
                 return nodo.getOperacion();
         }

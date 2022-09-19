@@ -22,7 +22,7 @@ L = [a-zA-Z]+
 ESP = [ \t\r]+
 NUM = ({E})("."({E})*)?
 ID = ("_")({L}|{E}|({L}"_")|({E}"_"))+("_")
-CADENA = [\"\“][^\"\”\'\n]*[\"\”\n]
+CADENA = [\"\“][^\"\”\']*[\"\”]
 CARACTER = [\']([a-zA-Z]|"${"{E}"}")[\']
 CMNTSINGLE = ("//".*\r\n)|("//".*\n)|("//".*\r)
 CMNTMULTI = \/\*([^\*\/]|[^\*]\/|(\*)*[^/])*\*\/
@@ -101,7 +101,18 @@ SL = [\n]+
 {NUM}               {return new Symbol(sym.Numero, (int)yychar, yyline, yytext());}
 {ESP}               {}
 {CADENA}            {return new Symbol(sym.Cadena, (int)yychar, yyline, yytext());}
-{CARACTER}          {return new Symbol(sym.Caracter, (int)yychar, yyline, yytext());}
+{CARACTER}          {
+                        if(yytext().contains("$")) {
+                            String cadena = yytext().replaceAll("$", "");
+                            cadena = cadena.replace("{", "");
+                            cadena = cadena.replace("}", "");
+                            int ascii = Integer.parseInt(cadena);
+                            char caracter = (char) ascii;
+                            cadena = String.valueOf(caracter);
+                            return new Symbol(sym.Caracter, (int)yychar, yyline, cadena);
+                        }
+                        return new Symbol(sym.Caracter, (int)yychar, yyline, yytext());
+                    }
 
   . {
      String msg = "Error Lexico \n"

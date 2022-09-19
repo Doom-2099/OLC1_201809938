@@ -847,21 +847,25 @@ public class Sintactic extends java_cup.runtime.lr_parser {
 
 
     public void syntax_error(Symbol s) {
-        String msg = "Error Sintactico Recuperable\n"
-        + "En la linea: " + s.right + "\n"
-        + "En la columna: " + s.left + "\n"
-        + "Lexema: " + s.value + "\n";
+        if(s.value != null){
+            String msg = "Error Sintactico No Recuperable\n"
+            + "En la linea: " + s.right + "\n"
+            + "En la columna: " + s.left + "\n"
+            + "Lexema: " + s.value + "\n";
 
-        ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
+            ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
+        }
     }
 
     public void unrecovered_syntax_error(Symbol s){
-        String msg = "Error Sintactico No Recuperable\n"
-        + "En la linea: " + s.right + "\n"
-        + "En la columna: " + s.left + "\n"
-        + "Lexema: " + s.value + "\n";
+        if(s.value != null){
+            String msg = "Error Sintactico No Recuperable\n"
+            + "En la linea: " + s.right + "\n"
+            + "En la columna: " + s.left + "\n"
+            + "Lexema: " + s.value + "\n";
 
-        ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
+            ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
+        }
     }
 
 

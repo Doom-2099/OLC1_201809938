@@ -10,21 +10,25 @@ import java.util.ArrayList;
 parser code
 {:
     public void syntax_error(Symbol s) {
-        String msg = "Error Sintactico Recuperable\n"
-        + "En la linea: " + s.right + "\n"
-        + "En la columna: " + s.left + "\n"
-        + "Lexema: " + s.value + "\n";
+        if(s.value != null){
+            String msg = "Error Sintactico No Recuperable\n"
+            + "En la linea: " + s.right + "\n"
+            + "En la columna: " + s.left + "\n"
+            + "Lexema: " + s.value + "\n";
 
-        ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
+            ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
+        }
     }
 
     public void unrecovered_syntax_error(Symbol s){
-        String msg = "Error Sintactico No Recuperable\n"
-        + "En la linea: " + s.right + "\n"
-        + "En la columna: " + s.left + "\n"
-        + "Lexema: " + s.value + "\n";
+        if(s.value != null){
+            String msg = "Error Sintactico No Recuperable\n"
+            + "En la linea: " + s.right + "\n"
+            + "En la columna: " + s.left + "\n"
+            + "Lexema: " + s.value + "\n";
 
-        ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
+            ListError.getInstance().addError(new Error(s.left, s.right, s.value.toString(), msg, "SINTACTICO"));
+        }
     }
 :}
 
@@ -95,7 +99,7 @@ INSTRUCCIONES ::= INSTRUCCION:inst INSTRUCCIONES:instrucciones
     | INSTRUCCION:inst
         {:
             ArrayList<NodeIns> instrucciones = new ArrayList<>();
-            instrucciones.add(0, (NodeIns)inst);
+            instrucciones.add((NodeIns)inst);
             RESULT = instrucciones;
         :}
     | error INSTRUCCIONES:instrucciones
@@ -667,7 +671,7 @@ LISTA_VALORES ::= EXPRESION:exp Coma LISTA_VALORES:exps
     ;
 
 IMPRESIONES ::= Imprimir EXPRESION:exp PComa
-        {:
+        {: 
             NodeIns nodo = new NodeIns("imprimir");
             nodo.putFeatures("expresion", exp);
             RESULT = nodo;

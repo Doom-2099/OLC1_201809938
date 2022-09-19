@@ -34,10 +34,10 @@ func main() {
 		fmt.Println("Estas definiendo bien los valores")
 		var _varaux_ int = _variable1_ % 2
 		switch _varaux_ {
-		case 0:
-			fmt.Print("el valor es mayor a 0 y menos a 2")
-		case 2:
-			fmt.Print("el valor es mayor a 2")
+			case 0:
+				fmt.Print("el valor es mayor a 0 y menos a 2")
+			case 2:
+				fmt.Print("el valor es mayor a 2")
 		}
 	}
 	_metodo_1_()

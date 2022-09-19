@@ -30,7 +30,9 @@ public class AST {
         
         if(files.length > 0) {
             for(File file : files) {
-                file.delete();
+                if(!file.getName().equals("README.md")){
+                    file.delete();
+                }
             }
         }
         
@@ -91,7 +93,6 @@ public class AST {
             }
 
             _walkTreeIns(root.get(i), padre);
-            GeneratePy.getInstance().startTraduction(root.get(i));
 
             if (hijoAux != "") {
                 padre = hijoAux;
@@ -104,6 +105,7 @@ public class AST {
         switch (nodo.getInstruccion()) {
             case "declaracion":
                 GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 String hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"DECLARACION\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -140,7 +142,8 @@ public class AST {
 
             case "asignacion":
                 GeneratePy.getInstance().startTraduction(nodo);
-                hijo = "node" + contador++;
+                GenerateGo.getInstance().startTraduction(nodo);
+                hijo = "node" + contador++; 
                 nodos.append(hijo + "[label=\"ASIGNACION\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
                 padre = hijo;
@@ -170,6 +173,8 @@ public class AST {
                 break;
 
             case "if-simple":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"IF\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -192,9 +197,13 @@ public class AST {
 
                 ArrayList<NodeIns> instrucciones = (ArrayList) nodo.getInstrucciones();
                 walkTree(instrucciones, padre);
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
                 break;
 
             case "if-else":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"IF-ELSE\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -216,6 +225,8 @@ public class AST {
 
                 instrucciones = (ArrayList) nodo.getInstrucciones();
                 walkTree(instrucciones, hijo);
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
 
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"else\"];\n");
@@ -226,12 +237,17 @@ public class AST {
                 conexiones.append(padre + "->" + hijo + "\n");
 
                 NodeIns nodoaux = (NodeIns) nodo.getPropIns().get("else");
+                GeneratePy.getInstance().startTraduction(nodoaux);
+                GenerateGo.getInstance().startTraduction(nodoaux);
                 instrucciones = (ArrayList) nodoaux.getInstrucciones();
                 walkTree(instrucciones, hijo);
-
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
                 break;
 
             case "if-elif":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"IF-ELSE\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -253,6 +269,8 @@ public class AST {
 
                 instrucciones = (ArrayList) nodo.getInstrucciones();
                 walkTree(instrucciones, hijo);
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
 
                 if (nodo.getPropIns().get("elif") != null) {
                     hijo = "node" + contador++;
@@ -261,12 +279,14 @@ public class AST {
                     padre = hijo;
 
                     nodoaux = (NodeIns) nodo.getPropIns().get("elif");
-                    _walkTreeIns(nodoaux, padre);
+                    _walkTreeIns(nodoaux, padre);                    
                 }
 
                 break;
 
             case "if-elif-else":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"IF-ELSE\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -288,6 +308,8 @@ public class AST {
 
                 instrucciones = (ArrayList) nodo.getInstrucciones();
                 walkTree(instrucciones, hijo);
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
 
                 if (nodo.getPropIns().get("elif") != null) {
                     hijo = "node" + contador++;
@@ -309,11 +331,15 @@ public class AST {
 
                 nodoaux = (NodeIns) nodo.getPropIns().get("else");
                 instrucciones = (ArrayList) nodoaux.getInstrucciones();
+                GeneratePy.getInstance().startTraduction(nodoaux);
+                GenerateGo.getInstance().startTraduction(nodoaux);
                 walkTree(instrucciones, hijo);
 
                 break;
 
             case "elif":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"else if\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -330,6 +356,8 @@ public class AST {
 
                 instrucciones = (ArrayList) nodo.getInstrucciones();
                 walkTree(instrucciones, hijo);
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
 
                 if (nodo.getPropIns().get("elif") != null) {
                     hijo = "node" + contador++;
@@ -344,6 +372,8 @@ public class AST {
                 break;
 
             case "switch":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"SWITCH\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -368,9 +398,12 @@ public class AST {
                     _walkTreeIns(caso, hijo);
                 }
 
+                GenerateGo.getInstance().restAmbit();
                 break;
 
             case "case":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"CASE\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -388,10 +421,14 @@ public class AST {
 
                 instrucciones = (ArrayList) nodo.getInstrucciones();
                 walkTree(instrucciones, hijo);
-
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
+                GenerateGo.getInstance().changeflagCase();
                 break;
 
             case "case_default":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label\"CASE\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -407,9 +444,14 @@ public class AST {
 
                 instrucciones = (ArrayList) nodo.getInstrucciones();
                 walkTree(instrucciones, hijo);
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
+                GenerateGo.getInstance().changeflagCase();
                 break;
 
             case "for":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"FOR\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -454,9 +496,13 @@ public class AST {
                     walkTree(instrucciones, hijo);
                 }
 
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
                 break;
 
             case "while":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"WHILE\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -480,9 +526,14 @@ public class AST {
                     instrucciones = (ArrayList) nodo.getInstrucciones();
                     walkTree(instrucciones, hijo);
                 }
+
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
                 break;
 
             case "doWhile":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"DO_WHILE\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -500,6 +551,11 @@ public class AST {
                     instrucciones = (ArrayList) nodo.getInstrucciones();
                     walkTree(instrucciones, hijo);
                 }
+                
+                nodo.setInstruccion("doWhileEnd");
+                GeneratePy.getInstance().startTraduction(nodo);
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
 
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"while\"];\n");
@@ -513,6 +569,8 @@ public class AST {
                 break;
 
             case "declaracion_metodo":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"DECLARACION_METODO\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -545,9 +603,16 @@ public class AST {
                     instrucciones = (ArrayList) nodo.getInstrucciones();
                     walkTree(instrucciones, hijo);
                 }
+
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
+                GeneratePy.getInstance().changeflag();
+                GenerateGo.getInstance().changeflag();
                 break;
 
             case "declaracion_funcion":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"DECLARACION_FUNCION\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -584,10 +649,16 @@ public class AST {
                     instrucciones = (ArrayList) nodo.getInstrucciones();
                     walkTree(instrucciones, hijo);
                 }
-
+                
+                GeneratePy.getInstance().restAmbit();
+                GenerateGo.getInstance().restAmbit();
+                GeneratePy.getInstance().changeflag();
+                GenerateGo.getInstance().changeflag();
                 break;
 
             case "ejecutar":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"EJECUTAR\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -616,6 +687,8 @@ public class AST {
                 break;
 
             case "imprimir":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"IMPRIMIR\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -629,6 +702,8 @@ public class AST {
                 break;
 
             case "imprimir_nl":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"IMPRIMIR_NL\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");
@@ -642,6 +717,8 @@ public class AST {
                 break;
 
             case "return":
+                GeneratePy.getInstance().startTraduction(nodo);
+                GenerateGo.getInstance().startTraduction(nodo);
                 hijo = "node" + contador++;
                 nodos.append(hijo + "[label=\"RETURN\"];\n");
                 conexiones.append(padre + "->" + hijo + "\n");

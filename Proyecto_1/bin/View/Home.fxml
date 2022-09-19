@@ -14,7 +14,7 @@
          <children>
             <Button layoutX="31.0" layoutY="33.0" mnemonicParsing="false" onAction="#openFile" prefHeight="20.0" prefWidth="93.0" text="Open" />
             <Button layoutX="131.0" layoutY="33.0" mnemonicParsing="false" onAction="#saveFile" text="Save" />
-            <Button layoutX="224.0" layoutY="33.0" mnemonicParsing="false" onAction="#showErrors" text="Errors" />
+            <Button layoutX="224.0" layoutY="33.0" mnemonicParsing="false" onAction="#selectError" text="Errors" />
             <Button layoutX="327.0" layoutY="33.0" mnemonicParsing="false" onAction="#showDiagram" text="Diagram" />
             <Button layoutX="567.0" layoutY="89.0" mnemonicParsing="false" onAction="#run" text="Run" />
             <Button layoutX="650.0" layoutY="89.0" mnemonicParsing="false" onAction="#clear" text="Clear" />

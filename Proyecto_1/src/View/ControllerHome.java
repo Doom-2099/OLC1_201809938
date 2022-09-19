@@ -17,6 +17,7 @@ import Context.Sintactic;
 import Error.Error;
 import Error.ListError;
 import Model.Generator.AST;
+import Model.Generator.GenerateGo;
 import Model.Generator.GeneratePy;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,10 +34,12 @@ public class ControllerHome implements Initializable {
     private String codeIn;
     private String codeOutPython;
     private String codeOutGolang;
+    private String erroresTxt;
 
     private boolean flagCodeIn = false;
     private boolean flagCodeOutPython = false;
     private boolean flagCodeOutGolang = false;
+    private boolean flagErrors = false;
 
     @FXML
     private Label countErrors;
@@ -84,28 +87,23 @@ public class ControllerHome implements Initializable {
             File file = new File(pathfile);
             FileWriter fw = new FileWriter(file);
             BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(textArea.getText());
+            bw.write(codeIn);
             bw.close();
             fw.close();
             System.out.println("El file Se Guardo Correctamente");
-            setFlags(4);
+            setFlags(5);
         } catch (IOException ioex) {
             System.err.println("El file No Se Pudo Guardar");
         }
     }
-
-    @FXML 
-    private void showErrors(ActionEvent e) {
-        System.out.println("Mostrar Errores");
-    }
-
+ 
     @FXML
     private void showDiagram(ActionEvent e) {
         System.out.println("Mostar Diagrama De Flujo");
     }
 
     @FXML
-    private void run(ActionEvent e) {
+    private void run(ActionEvent e){
         System.out.println("Correr Programa");
         ListError.getInstance().clearList();
         if(!"".equals(textArea.getText())) {
@@ -121,30 +119,53 @@ public class ControllerHome implements Initializable {
                     for(int i = 0; i < errors.size(); i++) {
                         System.out.println(errors.get(i).getMsg());
                     }
-
                 } else {
                     countErrors.setText("0 Errores");
                     String message = AST.getInstance().generate_AST_Img();
                     message += "\n" + GeneratePy.getInstance().printTraduction();
+                    message += "\n" + GenerateGo.getInstance().printTraduction();
                     if(!message.contains("AST")) {
                         alertError(message, "Error AST", "Error");
                     } else {
                         alertInformation(message, "Generacion AST", "Informacion");
+                        File file = new File("/home/jorge/Escritorio/COMPI/OLC1-201809938/Proyecto_1/src/Dist/Python/out.py");
+                        FileReader fr = new FileReader(file);
+                        BufferedReader br = new BufferedReader(fr);
+                        String linea = "";
+                        while((linea = br.readLine()) != null) {
+                            codeOutPython += linea + "\n";
+                        }
+
+                        br.close();
+                        fr.close();
+
+                        file = new File("/home/jorge/Escritorio/COMPI/OLC1-201809938/Proyecto_1/src/Dist/Golang/out.go");
+                        fr = new FileReader(file);
+                        br = new BufferedReader(fr);
+                        linea = "";
+                        while((linea = br.readLine()) != null) {
+                            codeOutGolang += linea + "\n";
+                        }
+
+                        br.close();
+                        fr.close();
                     }
                 }
             } catch(Exception err) {
                 System.out.println(err);
-                System.out.println("Error En ControllerHome");
+                System.out.println(err.getLocalizedMessage());
+                System.out.println(err.getStackTrace().toString());
             }
         }
     }
 
     @FXML
     private void clear(ActionEvent e) {
-        setFlags(4);
+        setFlags(5);
         codeIn = "";
         codeOutPython = "";
         codeOutGolang = "";
+        erroresTxt = "";
         System.out.println("Limpiando Area De Texto");
         pathfile = "";
         textArea.clear();
@@ -172,6 +193,13 @@ public class ControllerHome implements Initializable {
     }
 
     @FXML
+    private void selectError(ActionEvent e) {
+        saveText();
+        textArea.setText(erroresTxt);
+        setFlags(4);
+    }
+
+    @FXML
     private void alertError(String message, String title, String header) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText(header);
@@ -193,18 +221,27 @@ public class ControllerHome implements Initializable {
             flagCodeIn = true;
             flagCodeOutPython = false;
             flagCodeOutGolang = false;
+            flagErrors = false;
         } else if(valor == 2) {
             flagCodeIn = false;
             flagCodeOutPython = true;
             flagCodeOutGolang = false;
+            flagErrors = false;
         } else if(valor == 3) {
             flagCodeIn = false;
             flagCodeOutPython = false;
             flagCodeOutGolang = true;
+            flagErrors = false;
+        } else if(valor == 4) {
+            flagCodeIn = false;
+            flagCodeOutPython = false;
+            flagCodeOutGolang = false;
+            flagErrors = true;
         } else {
             flagCodeIn = false;
             flagCodeOutPython = false;
             flagCodeOutGolang = false;
+            flagErrors = false;
         }
     }
 
@@ -215,6 +252,8 @@ public class ControllerHome implements Initializable {
             codeOutGolang = textArea.getText();
         } else if(flagCodeOutPython){
             codeOutPython = textArea.getText();
+        } else if(flagErrors) {
+            erroresTxt = textArea.getText();
         }
     }
 
