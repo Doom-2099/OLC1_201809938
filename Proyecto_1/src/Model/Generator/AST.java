@@ -76,27 +76,29 @@ public class AST {
     public void walkTree(ArrayList<NodeIns> root, String padre) {
         String hijo;
         String hijoAux = "";
-        for (int i = 0; i < root.size(); i++) {
-            if ((i + 1) < root.size()) {
-                hijo = "node" + contador++;
-                hijoAux = "node" + contador++;
-                nodos.append(hijo + "[label=\"INSTRUCCION\"];\n");
-                nodos.append(hijoAux + "[label=\"INSTRUCCIONES\"];\n");
-                conexiones.append(padre + "->" + hijo + "\n");
-                conexiones.append(padre + "->" + hijoAux + "\n");
-                padre = hijo;
-            } else {
-                hijo = "node" + contador++;
-                nodos.append(hijo + "[label=\"INSTRUCCION\"];\n");
-                conexiones.append(padre + "->" + hijo + "\n");
-                padre = hijo;
-            }
+        if(root != null) {
+            for (int i = 0; i < root.size(); i++) {
+                if ((i + 1) < root.size()) {
+                    hijo = "node" + contador++;
+                    hijoAux = "node" + contador++;
+                    nodos.append(hijo + "[label=\"INSTRUCCION\"];\n");
+                    nodos.append(hijoAux + "[label=\"INSTRUCCIONES\"];\n");
+                    conexiones.append(padre + "->" + hijo + "\n");
+                    conexiones.append(padre + "->" + hijoAux + "\n");
+                    padre = hijo;
+                } else {
+                    hijo = "node" + contador++;
+                    nodos.append(hijo + "[label=\"INSTRUCCION\"];\n");
+                    conexiones.append(padre + "->" + hijo + "\n");
+                    padre = hijo;
+                }
 
-            _walkTreeIns(root.get(i), padre);
+                _walkTreeIns(root.get(i), padre);
 
-            if (hijoAux != "") {
-                padre = hijoAux;
-                hijoAux = "";
+                if (hijoAux != "") {
+                    padre = hijoAux;
+                    hijoAux = "";
+                }
             }
         }
     }
