@@ -1,0 +1,32 @@
+#menu-icon {
+    position: fixed;
+    top: 1%;
+    left: 2.5%;
+}
+
+#menu-icon-text {
+    font-size: 3.4rem;
+}
+
+textarea {
+    padding-left: 2%;
+    padding-top: 2%;
+    padding-right: 2%;
+    padding-bottom: 2%;
+    font-size: 12pt;
+    resize: none;
+}
+
+#consola {
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #cfd8dc;
+    border-radius: 15px;
+}

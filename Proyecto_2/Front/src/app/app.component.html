@@ -1,0 +1,197 @@
+<!-- NAVBAR START -->
+<nav>
+  <div class="nav-wrapper teal darken-1">
+    <a class="brand-logo center">Interprete</a>
+  </div>
+</nav>
+<!-- END NAVBAR -->
+
+<!-- SIDENAV START -->
+<ul id="slide-out" class="sidenav">
+  <li>
+    <div class="user-view">
+      <div class="background">
+        <img src="https://i.pinimg.com/564x/d2/12/5d/d2125dd79300d723f93db4b95a432f3c.jpg">
+      </div>
+      <a href="#user"><img src="https://i.pinimg.com/564x/4d/77/e2/4d77e2ffb4b616928c6242b94f6cfefd.jpg"
+          class="circle"></a>
+      <a href="#name"><span class="white-text name">Jorge Castañeda</span></a>
+      <a href="#email"><span class="white-text email">jorgecas20000@gmail.com</span></a>
+    </div>
+  </li>
+  <li class="no-padding">
+    <ul class="collapsible collapsible-accordion">
+      <li>
+        <a class="collapsible-header waves-effect"><i class="material-icons">keyboard_double_arrow_right</i>Archivos</a>
+        <div class="collapsible-body">
+          <ul>
+            <li><a class="modal-trigger waves-effect waves-red" href="#newFile"><i
+                  class="material-icons">note_add</i>Nuevo Archivo</a></li>
+            <li><a class="modal-trigger waves-effect waves-yellow" href="#loadFile"><i
+                  class="material-icons">cloud_upload</i>Cargar Archivo</a></li>
+            <li><a class="modal-trigger waves-effect waves-orange" href="#saveFile"><i
+                  class="material-icons">save</i>Guardar Archivo</a></li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a class="collapsible-header waves-effect"><i class="material-icons">keyboard_double_arrow_right</i>Pestañas</a>
+        <div class="collapsible-body">
+          <ul>
+            <li><a class="modal-trigger waves-effect waves-purple" href="#newTab"><i class="material-icons">tab</i>Nueva
+                Tab</a></li>
+            <li><a class="waves-effect waves-teal" onclick="closeTab()"><i class="material-icons">cancel</i>Cerrar
+                Tab</a></li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a class="collapsible-header waves-effect"><i
+            class="material-icons">keyboard_double_arrow_right</i>Herramientas</a>
+        <div class="collapsible-body">
+          <ul>
+            <li><a class="waves-effect waves-red" onclick="runCode()"><i class="material-icons">handyman</i>Ejecutar</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a class="collapsible-header waves-effect"><i class="material-icons">keyboard_double_arrow_right</i>Reportes</a>
+        <div class="collapsible-body">
+          <ul>
+            <li><a class="waves-effect waves-yellow"><i class="material-icons">account_tree</i>AST</a></li>
+            <li><a class="waves-effect waves-orange"><i class="material-icons">error</i>Tabla Errores</a></li>
+            <li><a class="waves-effect waves-purple"><i class="material-icons">emoji_symbols</i>Tabla Simbolos</a></li>
+            <li><a class="waves-effect waves-green"><i class="material-icons">auto_stories</i>Manual Usuario</a></li>
+            <li><a class="waves-effect waves-teal"><i class="material-icons">data_object</i>Manual Tecnico</a></li>
+            <li><a class="waves-effect waves-red"><i class="material-icons">integration_instructions</i>Gramatica</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<a id="menu-icon" data-target="slide-out" class="sidenav-trigger show-on-large white-text"><i id="menu-icon-text"
+    class="material-icons">apps</i></a>
+<!-- END SIDENAV -->
+
+<!-- MODALS START -->
+<!-- MODAL NEW FILE -->
+<div id="newFile" class="modal">
+  <div class="modal-content">
+    <h3 style="padding-top: 2%; padding-left: 2%;">Nuevo Archivo</h3>
+    <div class="divider transparent"></div><br>
+    <div class="row">
+      <div class="input-field col s8 offset-s2">
+        <i class="material-icons prefix">drive_file_rename_outline</i>
+        <input id="newFileName" style="font-size: 13.2pt;" type="text" class="validate">
+        <label for="newFileName">Nombre</label>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a onclick="newFile()" class="modal-close waves-effect waves-green btn-flat">Aceptar</a>
+    <a class="modal-close waves-effect waves-red btn-flat">Cancelar</a>
+  </div>
+</div>
+<!--------------------------------------------------------------------------------------------------->
+
+<!-- MODAL CARGAR FILE -->
+<div id="loadFile" class="modal">
+  <div class="modal-content">
+    <h3 style="padding-top: 2%; padding-left: 2%;">Cargar Archivo</h3>
+    <div class="divider transparent"></div><br>
+    <div class="row">
+      <form class="col s8 offset-s2">
+        <div class="file-field input-field">
+          <div class="btn">
+            <span>File</span>
+            <input id="fileUploaded" name="File" type="file">
+          </div>
+          <div class="file-path-wrapper">
+            <input type="text" style="font-size: 13.2pt;" class="file-path validate">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a onclick="uploadFile()" class="modal-close waves-effect waves-green btn-flat">Aceptar</a>
+    <a class="modal-close waves-effect waves-red btn-flat">Cancelar</a>
+  </div>
+</div>
+<!--------------------------------------------------------------------------------------------------->
+
+<!-- MODAL GUARDAR FILE -->
+<div id="saveFile" class="modal">
+  <div class="modal-content">
+    <h3>Guardar Archivo</h3>
+    <div class="divider transparent"></div><br>
+    <div class="row">
+      <div class="input-field col s8 offset-s2">
+        <i class="material-icons prefix">label</i>
+        <select id="savefiles">
+          <option value="" disabled selected>Elegir El Archivo A Guardar</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a onclick="downloadFile()" class="modal-close waves-effect waves-green btn-flat">Descargar</a>
+    <a onclick="saveFile()" class="modal-close waves-effect waves-green btn-flat">Guardar</a>
+    <a class="modal-close waves-effect waves-red btn-flat">Cancelar</a>
+  </div>
+</div>
+<!--------------------------------------------------------------------------------------------------->
+
+<!-- MODAL NUEVO TAB -->
+<div id="newTab" class="modal">
+  <div class="modal-content">
+    <h3>Nueva Pestaña</h3>
+    <div class="divider transparent"></div><br>
+    <div class="row">
+      <div class="input-field col s8 offset-s2">
+        <i class="material-icons prefix">tab_unselected</i>
+        <select id="filesDisp">
+          <option value="" disabled selected>Elegir El Archivo A Abrir</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a onclick="nuevoTab()" class="modal-close waves-effect waves-green btn-flat">Aceptar</a>
+    <a class="modal-close waves-effect waves-red btn-flat">Cancelar</a>
+  </div>
+</div>
+<!--------------------------------------------------------------------------------------------------->
+<!-- END MODALS -->
+
+<!-- TABS PAGINA START -->
+<br>
+<div>
+  <div class="col s12" id="contentTabsPage">
+    <ul id="tabsGeneral" class="tabs tabs-fixed-width black">
+      <li class="tab col s3"><a href="#codeTab" class="active white-text">Code</a></li>
+    </ul>
+  </div>
+  <div id="codeTab" class="col s12" style="height: 630px;">
+    <div class="container">
+      <br>
+      <div class="row" id="contentTabsCode">
+        <div class="col s12">
+          <ul id="tabsCode" class="tabs tabs-fixed-width indigo darken-2">
+            <li class="tab col s3"><a href="#code1" class="active white-text">Test 1</a></li>
+          </ul>
+        </div>
+        <div id="code1" class="col s12"><textarea id="code1Text" style="height: 370px;" class="white-text"
+            placeholder="Write Your Code Here"></textarea></div>
+      </div>
+      <div class="row">
+        <textarea id="consola" disabled style="height: 130px;" class="white-text"
+          placeholder="Iniciar Proceso..."></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END PAGINA TABS -->
