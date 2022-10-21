@@ -2,8 +2,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 const headerDict = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
     'Access-Control-Allow-Origin': '*'
 }
 
@@ -21,31 +19,55 @@ export class ApiService {
 
     // ---------> PETICIONES
     getFiles() {
-        return this.http.get('http://localhost:3000/getFiles', requestOptions);
+        return this.http.get
+            <{ 
+                flag: boolean,
+                message: string,
+                files: []
+            }>
+            ('http://localhost:3000/getFiles', requestOptions);
     }
 
-    newFile() {
-        return this.http.post('http://localhost:3000/newFile', { name: name }, requestOptions);
+    newFile(name: string) {
+        return this.http.post
+            <{
+                flag: boolean,
+                name: string
+            }>('http://localhost:3000/newFile', { name: name }, requestOptions);
     }
 
-    uploadFile() {
-        return this.http.post('http://localhost:3000/uploadFile/', { name: name }, requestOptions);
+    uploadFile(formData: FormData, name: string) {
+        return this.http.post
+            <{
+                flag: boolean,
+                message: string,
+                code: string,
+                name: string
+            }>('http://localhost:3000/uploadFile/' + name, formData);
     }
 
-    saveFile() {
-        return this.http.post('http://localhost:3000/saveFile', { name: name }, requestOptions);
+    saveFile(filename: string, content: string) {
+        return this.http.post
+            <{
+                flag: boolean,
+                message: string        
+            }>('http://localhost:3000/saveFile', { name: filename, content: content }, requestOptions);
     }
 
-    downloadFile() {
-        return this.http.post('http://localhost:3000/downloadFile', { name: name }, requestOptions);
+    nuevoTab(filename: string) {
+        return this.http.post
+            <{
+                flag: boolean,
+                message: string,
+                code: string
+            }>('http://localhost:3000/getFileForTab', { name: filename }, requestOptions);
     }
 
-    nuevoTab() {
-        return this.http.post('http://localhost:3000/getFileForTab', { name: name }, requestOptions);
-    }
-
-    runCode() {
-        return this.http.post('http://localhost:3000/runCode', { name: name }, requestOptions);
+    runCode(code: string, filename: any) {
+        return this.http.post
+            <{
+                // Objeto A Obtener
+            }>('http://localhost:3000/runCode', { code: code, filename: filename }, requestOptions);
     }
 
 }

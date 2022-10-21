@@ -1,0 +1,4 @@
+cd /home/jorge/Escritorio/COMPI/OLC1-201809938/Proyecto_2/Front
+ng serve
+cd /home/jorge/Escritorio/COMPI/OLC1-201809938/Proyecto_2/Back/API
+node index
