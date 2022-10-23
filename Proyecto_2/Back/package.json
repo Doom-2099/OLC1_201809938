@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx nodemon API/index.js"
+    "start": "npx nodemon API/index.js",
+    "generate": "jison API/Parser/grammar.jison"
   },
   "author": "",
   "license": "ISC",

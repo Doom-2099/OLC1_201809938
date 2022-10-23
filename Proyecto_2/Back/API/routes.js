@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const parser = require('./Parser/grammar');
+const text = require('./aux');
 const routes = express.Router();
 
 const storage = multer.diskStorage({
@@ -134,7 +136,7 @@ routes
          var code = JSON.parse(data)['code'];
          // EJECTUAR PARSER
          // RETORNAR ERRORES, SALIDAS, REPORTES
-         
+         parser.parse(code);
       });
    });
 
