@@ -20,7 +20,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
 	ngOnInit(): void {
 		this.getFiles();
-
+		M.AutoInit();
 	}
 
 	ngAfterViewInit(): void {

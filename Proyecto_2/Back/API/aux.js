@@ -26,7 +26,98 @@ boolean var = 5 < 5;
 boolean var = 5 <= 5;
 boolean var = 5 >= 5;
 
-numero = 15 + 4 - 2 + id;`;
+numero = 15 + 4 - 2 + id;
+numero = toString("asdf");
 
+holaMundo(int valor, string cadena):void {
+    print(456);
+    println("R");
+    print(toCharArray("identificador"));
+    print(round(5.2));
+    vector1.push("valor");
+    vector2.pop();
+}
+
+do{
+    if (a>=1 && a <3)
+    {
+    Println(true);
+    }
+    else
+    {
+    Println(false);
+    }
+    a--;
+} until (a==0);
+
+do{
+    if (a>=1 && a <3){
+        Println(true);
+    }
+    else
+    {
+        Println(false);
+    }
+    a--;
+} while (a>0);
+
+for (i=5; i>2; i=i-1){
+    Print("i="+i+"\\n");
+    //más sentencias
+}
+
+while (x<100){
+    if (x > 50)
+    {
+        Print("Mayor que 50");
+        //Más sentencias
+    }
+    else
+    {
+        Print("Menor que 100");
+        //Más sentencias
+    } 
+    X++;
+    //Más sentencias
+}
+
+switch( edad ) {
+    Case 10:
+        Println("Tengo 10 anios.");
+        // mas sentencias Break;
+    Case 18:
+        Print("Tengo 18 anios.");
+        // mas sentencias Case 25:
+        Println("Tengo 25 anios.");
+        // mas sentencias Break;
+    Default:
+        Print("No se que edad tengo. :(");
+        // mas sentencias Break;
+}
+
+if (x > 50)
+{
+    Print("Mayor que 50");
+    //Más sentencias
+}
+elif (x <= 50 && x > 0)
+{
+    Print ("Menor que 50");
+    if (x > 25)
+    {
+        Print("Numero mayor que 25");
+        //Más sentencias
+    }else{
+        Print("Numero menor que 25");
+        //Más sentencias
+    }
+    //Más sentencias
+}
+else
+{
+    Print("Numero negativo");
+    //Más
+}
+`;
 
 module.exports = text;

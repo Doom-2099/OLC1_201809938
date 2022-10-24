@@ -3,7 +3,6 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const parser = require('./Parser/grammar');
-const text = require('./aux');
 const routes = express.Router();
 
 const storage = multer.diskStorage({
@@ -33,12 +32,12 @@ routes
                res.json({ 
                   flag: false,
                   name: name
-               }).status(200);
+               }).status(200).end();
             } else {
                res.json({ 
                   flag: true,
                   name: name 
-               }).status(200);
+               }).status(200).end();
             }
          });
       })
@@ -53,21 +52,21 @@ routes
                   message: 'Ocurrio Un Error Al Abrir El Archivo',
                   code: '',
                   name: '',
-               }).status(200);
+               }).status(200).end();
             } else {
                res.json({
                   flag: true,
                   code: data,
                   name: req.params.id,
                   message: 'Archivo Abierto Correctamente'
-               }).status(200);
+               }).status(200).end();
             }
          });
       } else {
          res.json({
             flag: false,
             message: 'El Archivo No Se Encontro'
-         }).status(200);
+         }).status(200).end();
       }
    })
 
@@ -81,12 +80,12 @@ routes
                res.json({
                   flag: false,
                   message: 'El Archivo No Se Guardo Correctamente'
-               });
+               }).status(200).end();
             } else {
                res.json({
                   flag: true,
                   message: 'El Archivo Se Guardo Correctamente'
-               });
+               }).status(200).end();
             }
          });
       });
@@ -99,13 +98,13 @@ routes
                flag: false,
                message: 'Ocurrio Un Error Al Listar Los Archivos',
                files: []
-            });
+            }).status(200).end();
          } else {
             res.json({
                flag: true,
                files: files,
                message: 'Se Listaron Los Archivos Correctamente Desde El Back Version 2'
-            });
+            }).status(200).end();
          }
       });
    })
@@ -119,13 +118,13 @@ routes
                   flag: false,
                   message: 'Ocurrio Un Error Abriendo El Archivo',
                   code: ''
-               });
+               }).status(200).end();
             } else {
                res.json({
                   flag: true,
                   message: 'El Archivo Se Abrio Correctamente',
                   code: data
-               });
+               }).status(200).end();
             }
          });
       });
