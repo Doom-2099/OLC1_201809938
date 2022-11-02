@@ -1,5 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Error } from './Models/Error';
+import { Symbol } from './Models/Symbol';
 
 const headerDict = {
     'Access-Control-Allow-Origin': '*'
@@ -66,7 +68,10 @@ export class ApiService {
     runCode(code: string, filename: any) {
         return this.http.post
             <{
-                // Objeto A Obtener
+                flag: boolean,
+                message: string,
+                error: Error[],
+                symbol: Symbol[]
             }>('http://localhost:3000/runCode', { code: code, filename: filename }, requestOptions);
     }
 

@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import * as M from 'materialize-css';
 import { ApiService } from './api.service';
+import { Error } from '../app/Models/Error';
+import { Symbol } from './Models/Symbol';
 
 @Component({
 	selector: 'app-root',
@@ -15,6 +17,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 	@ViewChild('newFileName') newFilename!: ElementRef;
 	@ViewChild('contentTabsCode') contentTabsCode!: ElementRef;
 	@ViewChild('fileUploaded') fileUploaded!: ElementRef;
+	errores: Error[] = [];
+	simbolos: Symbol[] = [];
+	flagErrores: boolean = false;
+	flagSimbolo: boolean = false;
 
 	constructor(private api: ApiService, private render: Renderer2)  { }
 
@@ -147,6 +153,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 	}
 
 	runCode() {
+		this.changeFlagErrores();
 		let nodo = this.tabsCode.nativeElement.children[0];
 		let filename = '';
 		let parts;
@@ -171,8 +178,15 @@ export class AppComponent implements OnInit, AfterViewInit {
 				const text = nodo2.children[0];
 				this.api.runCode(text.value, parts)
 					.subscribe(resp => {
-						// Agregar respuestas de la compilacion en Jison
+						this.errores = resp.error;
+						this.simbolos = resp.symbol;
 						
+						if(this.errores.length > 0) {
+							M.toast({ html: resp.message, classes: 'black white-text' });
+						} else {
+							M.toast({ html: resp.message, classes: 'purple white-text' });
+							
+						}
 					});
 			}
 
@@ -221,9 +235,22 @@ export class AppComponent implements OnInit, AfterViewInit {
 		op.innerHTML = filename;
 		this.render.appendChild(this.filesModal2.nativeElement, op);
 	}
+
+	changeFlagErrores() {
+		if(this.errores.length > 0){
+			this.flagErrores = !this.flagErrores;
+		}
+	}
+
+	changeFlagSimbolo() {
+		this.flagSimbolo = !this.flagSimbolo;
+	}
+
+	getFlagErrores() {
+		return this.flagErrores;
+	}
+
+	getFlagSimbolos() {
+		return this.flagSimbolo;
+	}
 }
-
-
-
-
-// Agregar Materialize aqui y hacer las peticiones a la API.service

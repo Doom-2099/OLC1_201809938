@@ -8,7 +8,7 @@ const config = {
         cors: {
             server: [
                 {
-                    origin: "localhost:4200", //servidor que deseas que consuma o (*) en caso que sea acceso libre
+                    origin: "localhost:4200",
                     credentials: true
                 }
             ]
@@ -16,6 +16,8 @@ const config = {
     }
 }
 
+app.use(express.static('./Img'));
+app.use(express.static('./JSON'));
 app.use(require('./routes'));
 app.use(log('dev'));
 app.use(cors(config.application.cors.server));

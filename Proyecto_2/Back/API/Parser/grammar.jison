@@ -108,7 +108,8 @@
 <<EOF>>                                                 return 'EOF';
 
 . {
-    console.log('Error Lexico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column);
+    var msg = 'Error Lexico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column;
+    ListError.getInstance().addLista(new Error(yytext, yylloc.first_line, (yylloc.first_column + 1), 'LEXICO', msg));
 }
 
 /lex
@@ -172,7 +173,9 @@ INSTRUCCIONES
             $$ = [$1];
         }
 
-    //| error { console.error('Hay Un Error Sintactico En La Linea: ' + this._$.first_line + ', En La Columna: ' + (this._$.first_column + 1) + ' Lexema: ' + yytext); }
+    | error { 
+        var msg = 'Hay Un Error Sintactico En La Linea: ' + this._$.first_line + ', En La Columna: ' + (this._$.first_column + 1) + ' Lexema: ' + yytext;
+        ListError.getInstance().addLista(new Error(yytext, this._$.first_line, (this._$.first_column + 1), 'SINTACTICO', msg));
 ;
 
 INSTRUCCION

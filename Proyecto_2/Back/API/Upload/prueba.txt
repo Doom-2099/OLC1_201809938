@@ -1,0 +1,121 @@
+string []vector2 = new string[5];
+char [][]vectordosd2 = new char[2][2];
+int []vector1 = {1,3,5};
+int [][] vector2 = {{1,2},{3,4}};
+vector1[1] = vec1[5];
+vector[2][3] = "cadena";
+
+int numero = 0 + maje++ + maje--;
+int var1, var2, var3;
+string cadena = "hola" + vec[5] + (string)156;
+char var_1 = 'a';
+boolean verdadero;
+boolean flag1, flag2, flag3 = true;
+char ch1, ch2, ch3 = 'R';
+char caracter = '\'';
+char caracter = '\t';
+char caracter = '\n';
+char caracter = '\"';
+char caracter = '\\';
+
+boolean var = 5 == 5;
+boolean var = 5 != 5;
+boolean var = 5 > 5;
+boolean var = 5 < 5;
+boolean var = 5 <= 5;
+boolean var = 5 >= 5;
+
+numero = 15 + 4 - 2 + id;
+numero = toString("asdf");
+
+holaMundo(int valor, string cadena):void {
+    print(456);
+    println("R");
+    print(toCharArray("identificador"));
+    print(round(5.2));
+    vector1.push("valor");
+    vector2.pop();
+}
+
+do{
+    if (a>=1 && a <3)
+    {
+        Println(true);
+    }
+    else
+    {
+        Println(false);
+    }
+    a--;
+} until (a==0);
+
+do{
+    if (a>=1 && a <3){
+        Println(true);
+    }
+    else
+    {
+        Println(false);
+    }
+    a--;
+} while (a>0);
+
+for (i=5; i>2; i=i-1){
+    Print("i="+i+"\\n");
+    //más sentencias
+}
+
+while (x<100){
+    if (x > 50)
+    {
+        Print("Mayor que 50");
+        //Más sentencias
+    }
+    else
+    {
+        Print("Menor que 100");
+        //Más sentencias
+    } 
+    X++;
+    //Más sentencias
+}
+
+switch( edad ) {
+    Case 10:
+        Println("Tengo 10 anios.");
+        // mas sentencias Break;
+    Case 18:
+        Print("Tengo 18 anios.");
+        // mas sentencias Case 25:
+        Println("Tengo 25 anios.");
+        // mas sentencias Break;
+    Default:
+        Print("No se que edad tengo. :(");
+        // mas sentencias Break;
+}
+
+if (x > 50)
+{
+    Print("Mayor que 50");
+    //Más sentencias
+}
+elif (x <= 50 && x > 0)
+{
+    Print ("Menor que 50");
+    if (x > 25)
+    {
+        Print("Numero mayor que 25");
+        //Más sentencias
+    }else{
+        Print("Numero menor que 25");
+        //Más sentencias
+    }
+    //Más sentencias
+}
+else
+{
+    Print("Numero negativo");
+    //Más
+}
+
+run main();

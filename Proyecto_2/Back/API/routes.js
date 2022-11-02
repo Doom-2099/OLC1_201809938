@@ -3,6 +3,10 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const parser = require('./Parser/grammar');
+const graph = require('./Parser/Graph/AST');
+const ListError = require('./Parser/Error/ListError');
+const ListSymbol = require('./Parser/Symbols/ListSymbol');
+const interprete = require('./Parser/Symbols/Interprete');
 const routes = express.Router();
 
 const storage = multer.diskStorage({
@@ -132,10 +136,40 @@ routes
 
    .post('/runCode', (req, res) => {
       req.on('data', data => {
+         ListError.getInstance().clearLista();
          var code = JSON.parse(data)['code'];
          // EJECTUAR PARSER
          // RETORNAR ERRORES, SALIDAS, REPORTES
-         parser.parse(code);
+         var ast = parser.parse(code);
+
+         if(ListError.getInstance().getLista().length > 0) {
+            res.json({
+               flag: false,
+               message: 'El Codigo Contiene Errores',
+               error: ListError.getInstance().getLista(),
+               symbol: ListSymbol.getInstance().getLista()
+            }).status(200).end();
+         }
+
+         var flag = graph.generarDOT(ast);
+
+         interprete.analizarCode(ast);
+
+         if(flag) {
+            res.json({
+               flag: true,
+               message: 'El AST Se Genero Correctamente',
+               error: ListError.getInstance().getLista(),
+               symbol: ListSymbol.getInstance().getLista()
+            }).status(200).end();
+         } else {
+            res.json({
+               flag: false,
+               message: 'El AST No Se Genero',
+               error: ListError.getInstance().getLista(),
+               symbol: ListSymbol.getInstance().getLista()
+            }).status(200).end();
+         }
       });
    });
 

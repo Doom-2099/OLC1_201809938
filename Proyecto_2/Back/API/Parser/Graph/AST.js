@@ -13,11 +13,13 @@ const TOL = require('../Context/Expresion/TipoExpresion').TIPO_OP_LOGICA;
 const TOR = require('../Context/Expresion/TipoExpresion').TIPO_OP_RELACIONAL;
 
 // ---> MODULOS EXTRA
+const { exec } = require('child_process');
 const graphviz = require('graphviz');
 const path = require('path');
 const fs = require('fs');
 
 var grafo = graphviz.digraph('G');
+var contador = 0;
 
 function generarDOT(root) {    
     grafo.set('shape', 'circle');
@@ -29,16 +31,31 @@ function generarDOT(root) {
         grafo.addEdge(nodoAux, nodo);
     });
     
-    console.log(grafo.to_dot());
-
-    /* var today = new Date();
-    fs.writeFile(path.resolve(__dirname, '../../Img/AST' + today.toLocaleTimeString() + '.dot'), grafo.to_dot(), (err) => {
+    fs.writeFile(path.resolve(__dirname, '../../Img/AST.dot'), grafo.to_dot(), (err) => {
         if(err) {
             console.log(err);
-            throw err
+            return false
         }
-        // El Archivo Se Escribio Correctamente
-    }); */
+
+        var ruta1 = path.resolve(__dirname, '../../Img/AST.dot');
+        var ruta2 = path.resolve(__dirname, '../../Img/AST.png');
+        exec('dot -Tpng ' + ruta1 + ' -o ' + ruta2, (err, stdout, stderr) => {
+            if(err) {
+                console.log('err');
+                console.log(err);
+                return false;
+            }
+
+            if(stderr) {
+                console.log('stderr');
+                console.log(stderr);
+                return false;
+            }
+
+            console.log(stdout);
+            return true;
+        });
+    }); 
 }
 
 function analizarNodoInst(element) {
@@ -181,7 +198,7 @@ function analizarNodoInst(element) {
             var nodo2 = grafo.addNode('valor' + element.linea + element.columna, { 'label': 'VALOR' });
             var nodo3 = analizarNodoOp(element.expresion);
 
-            grafo.addEdge(nodo3, nodo3);
+            grafo.addEdge(nodo2, nodo3);
             grafo.addEdge(nodoPadre, nodo1);
             grafo.addEdge(nodoPadre, nodo2);
 
@@ -206,9 +223,9 @@ function analizarNodoInst(element) {
         case ASIG.MOD_VECTOR_D2:
             var nodoPadre = grafo.addNode(element.tipo + element.linea + element.columna, { 'label': 'MOD_VEC_2D' });
             var nodo1 = grafo.addNode(element.id + element.linea + element.columna, { 'label': element.id });
-            var nodo2 = grafo.addNode('posicion' + element.linea + element.columna, { 'label': '[POSICON_1]' });
+            var nodo2 = grafo.addNode('posicion1' + element.linea + element.columna, { 'label': '[POSICION_1]' });
             var nodo3 = analizarNodoOp(element.posicion[0]);
-            var nodo4 = grafo.addNode('posicion' + element.linea + element.columna, { 'label': '[POSICON_2]' });
+            var nodo4 = grafo.addNode('posicion2' + element.linea + element.columna, { 'label': '[POSICION_2]' });
             var nodo5 = analizarNodoOp(element.posicion[1]);
             var nodo6 = grafo.addNode('valor' + element.linea + element.columna, { 'label': 'VALOR' });
             var nodo7 = analizarNodoOp(element.valor);
@@ -245,11 +262,13 @@ function analizarNodoInst(element) {
             }
             
             var nodo5 = grafo.addNode('instrucciones' + element.linea + element.columna, { 'label': 'INSTRUCCIONES' });
-
+            
             element.instrucciones.forEach(instr => {
                 var nodo = analizarNodoInst(instr);
-                grafo.addNode(nodo5, nodo);
+                grafo.addEdge(nodo5, nodo);
             });
+
+            grafo.addEdge(nodoPadre, nodo5);
 
             return nodoPadre;
 
@@ -272,17 +291,18 @@ function analizarNodoInst(element) {
             var nodoPadre = grafo.addNode(element.tipo + element.linea + element.columna, { 'label': 'IF' });
             var nodo1 = grafo.addNode('condicion' + element.linea + element.columna, { 'label': 'CONDICION' });
             var nodo2 = analizarNodoOp(element.condicion);
-            var nodo3 = grafo.addNode('instrucciones' + element.linea + element.columna, { 'label': 'INSTRUCCIONES' });
+            var nodo3 = grafo.addNode('instrucciones' + element.linea + element.columna + contador, { 'label': 'INSTRUCCIONES' });
+            contador++;
 
-            grafo.addNode(nodo1, nodo2);
-            grafo.addNode(nodoPadre, nodo1);
+            grafo.addEdge(nodo1, nodo2);
+            grafo.addEdge(nodoPadre, nodo1);
 
             element.instrucciones.forEach(instr => {
                 var nodo = analizarNodoInst(instr);
                 grafo.addEdge(nodo3, nodo);
             });
 
-            grafo.addNode(nodoPadre, nodo3);
+            grafo.addEdge(nodoPadre, nodo3);
 
             if(element.elifs.length != 0) {
                 var nodo4 = grafo.addNode('elifs' + element.linea + element.columna, { 'label': 'ELIFS' });
@@ -306,7 +326,8 @@ function analizarNodoInst(element) {
             var nodoPadre = grafo.addNode(element.tipo + element.linea + element.columna, { 'label': 'ELSE IF' });
             var nodo1 = grafo.addNode('condicion' + element.linea + element.columna, { 'label': 'CONDICION' });
             var nodo2 = analizarNodoOp(element.condicion);
-            var nodo3 = grafo.addNode('instrucciones' + element.linea + element.columna, { 'label': 'INSTRUCCIONES' });
+            var nodo3 = grafo.addNode('instrucciones' + element.linea + element.columna + contador, { 'label': 'INSTRUCCIONES' });
+            contador++;
             
             element.instrucciones.forEach(instr => {
                 var nodo = analizarNodoInst(instr);
@@ -321,7 +342,8 @@ function analizarNodoInst(element) {
 
         case CONTROL.ELSE:
             var nodoPadre = grafo.addNode(element.tipo + element.linea + element.columna, { 'label': 'ELSE' });
-            var nodo1 = grafo.addNode('instrucciones' + element.linea + element.columna, { 'label': 'INSTRUCCIONES' });
+            var nodo1 = grafo.addNode('instrucciones' + element.linea + element.columna + contador, { 'label': 'INSTRUCCIONES' });
+            contador++;
 
             element.instrucciones.forEach(instr => {
                 var nodo = analizarNodoInst(instr);
@@ -593,7 +615,8 @@ function analizarNodoInst(element) {
 function analizarNodoOp(root) {
     switch(root.tipo) {
         case TOA.SUMA:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '+' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '+' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -603,7 +626,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOA.RESTA:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '-' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '-' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -613,7 +637,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOA.MULTIPLICACION:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '*' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '*' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -623,7 +648,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOA.DIVISION:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '/' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '/' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -633,7 +659,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOA.POTENCIA:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '^' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '^' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -643,7 +670,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOA.MODULO:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '%' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '%' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -653,7 +681,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOA.NEGATIVO:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '*-1' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '*-1' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
 
             grafo.addEdge(nodoPadre, nodo1);
@@ -661,7 +690,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOA.INCREMENTO:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '++' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '++' });
+            contador++;
             var nodo1 = grafo.addNode(root.OpIzq + root.linea + root.columna, { 'label': root.OpIzq });
 
             grafo.addEdge(nodoPadre, nodo1);
@@ -669,7 +699,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOA.DECREMENTO:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '--' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '--' });
+            contador++;
             var nodo1 = grafo.addNode(root.OpIzq + root.linea + root.columna, { 'label': root.OpIzq });
 
             grafo.addEdge(nodoPadre, nodo1);
@@ -677,7 +708,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOA.AGRUPACION:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '()' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '()' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
 
             grafo.addEdge(nodoPadre, nodo1);
@@ -707,7 +739,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOR.IGUAL:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '==' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '==' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -717,7 +750,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOR.DIFERENTE:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '!=' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '!=' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -727,7 +761,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOR.MENOR:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '<' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '<' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -737,7 +772,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOR.MAYOR:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '>' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '>' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -747,7 +783,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOR.MENORIG:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '<=' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '<=' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -757,7 +794,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOR.MAYORIG:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '>=' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '>=' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -767,7 +805,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOL.AND:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '&&' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '&&' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -777,7 +816,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOL.OR:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna, { 'label': '||' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '||' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
             var nodo2 = analizarNodoOp(root.OpDer);
 
@@ -787,7 +827,8 @@ function analizarNodoOp(root) {
             return nodoPadre;
 
         case TOL.NOT:
-            var nodoPadre = grafo.addNode(root.tipo + root.linea + root+columna, { 'label': '!' });
+            var nodoPadre = grafo.addNode(root.tipo + root.linea + root.columna + contador, { 'label': '!' });
+            contador++;
             var nodo1 = analizarNodoOp(root.OpIzq);
 
             grafo.addEdge(nodoPadre, nodo1);

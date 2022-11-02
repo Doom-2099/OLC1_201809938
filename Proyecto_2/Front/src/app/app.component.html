@@ -53,11 +53,12 @@
 				<a class="collapsible-header waves-effect"><i class="material-icons">keyboard_double_arrow_right</i>Reportes</a>
 				<div class="collapsible-body">
 					<ul>
-						<li><a class="waves-effect waves-yellow"><i class="material-icons">account_tree</i>AST</a></li>
-						<li><a class="waves-effect waves-orange"><i class="material-icons">error</i>Tabla Errores</a></li>
-						<li><a class="waves-effect waves-purple"><i class="material-icons">emoji_symbols</i>Tabla Simbolos</a></li>
+						<li><a class="waves-effect waves-yellow" href="http://localhost:3000/AST.png" target="_blank"><i class="material-icons">account_tree</i>AST</a></li>
+						<li><a class="waves-effect waves-purple" href="http://localhost:3000/parser.json" target="_blank"><i class="material-icons">data_object</i>JSON</a></li>
+						<li><a class="waves-effect waves-orange" (click)="changeFlagErrores()"><i class="material-icons">error</i>Tabla Errores</a></li>
+						<li><a class="waves-effect waves-purple" (click)="changeFlagSimbolo()"><i class="material-icons">emoji_symbols</i>Tabla Simbolos</a></li>
 						<li><a class="waves-effect waves-green"><i class="material-icons">auto_stories</i>Manual Usuario</a></li>
-						<li><a class="waves-effect waves-teal"><i class="material-icons">data_object</i>Manual Tecnico</a></li>
+						<li><a class="waves-effect waves-teal"><i class="material-icons">auto_stories</i>Manual Tecnico</a></li>
 						<li><a class="waves-effect waves-red"><i class="material-icons">integration_instructions</i>Gramatica</a>
 						</li>
 					</ul>
@@ -188,3 +189,52 @@
 	</div>
 </div>
 <!-- END PAGINA TABS -->
+
+<div *ngIf="getFlagErrores()" class="container">
+	<table class="white-text centered">
+        <thead>
+          <tr>
+              <th>Lexema</th>
+              <th>Linea</th>
+              <th>Columna</th>
+			  <th>Tipo</th>
+			  <th>Mensaje</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let error of errores">
+            <td>{{error.lexema}}</td>
+            <td>{{error.linea}}</td>
+            <td>{{error.columna}}</td>
+			<td>{{error.tipo}}</td>
+			<td>{{error.message}}</td>
+		  </tr>
+        </tbody>
+	</table>
+</div>
+
+<!-- Agregar Lectura De Tabla De Simbolos -->
+<div *ngIf="getFlagSimbolos()" class="container">
+	<table class="white-text centered">
+        <thead>
+          <tr>
+              <th>Simbolo</th>
+              <th>Tipo</th>
+              <th>Ambito</th>
+			  <th>Valor</th>
+			  <th>Linea</th>
+			  <th>Columna</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let simbolo of simbolos">
+            <td>{{simbolo.simbolo}}</td>
+            <td>{{simbolo.tipo}}</td>
+            <td>{{simbolo.ambito}}</td>
+			<td>{{simbolo.valor}}</td>
+			<td>{{simbolo.linea}}</td>
+			<td>{{simbolo.columna}}</td>
+		  </tr>
+        </tbody>
+	</table>
+</div>

@@ -706,24 +706,100 @@
       "OpIzq": {
         "valor": "a",
         "tipo": "IDENTIFICADOR",
-        "linea": 42,
+        "linea": 50,
         "columna": 10
       },
       "OpDer": {
         "valor": "0",
         "tipo": "INT",
-        "linea": 42,
+        "linea": 50,
         "columna": 13
       },
       "tipo": "IGUAL",
-      "linea": 42,
+      "linea": 50,
       "columna": 10
     },
     "instrucciones": [
       {
+        "condicion": {
+          "OpIzq": {
+            "OpIzq": {
+              "valor": "a",
+              "tipo": "IDENTIFICADOR",
+              "linea": 41,
+              "columna": 9
+            },
+            "OpDer": {
+              "valor": "1",
+              "tipo": "INT",
+              "linea": 41,
+              "columna": 12
+            },
+            "tipo": "MAYORIGUAL",
+            "linea": 41,
+            "columna": 9
+          },
+          "OpDer": {
+            "OpIzq": {
+              "valor": "a",
+              "tipo": "IDENTIFICADOR",
+              "linea": 41,
+              "columna": 17
+            },
+            "OpDer": {
+              "valor": "3",
+              "tipo": "INT",
+              "linea": 41,
+              "columna": 20
+            },
+            "tipo": "MENOR",
+            "linea": 41,
+            "columna": 17
+          },
+          "tipo": "AND",
+          "linea": 41,
+          "columna": 9
+        },
+        "tipo": "IF",
+        "instrucciones": [
+          {
+            "tipo": "PRINTLN",
+            "expresion": {
+              "valor": "true",
+              "tipo": "BOOL",
+              "linea": 43,
+              "columna": 17
+            },
+            "linea": 43,
+            "columna": 9
+          }
+        ],
+        "elifs": [],
+        "linea": 41,
+        "columna": 5,
+        "els": {
+          "tipo": "ELSE",
+          "instrucciones": [
+            {
+              "tipo": "PRINTLN",
+              "expresion": {
+                "valor": "false",
+                "tipo": "BOOL",
+                "linea": 47,
+                "columna": 17
+              },
+              "linea": 47,
+              "columna": 9
+            }
+          ],
+          "linea": 41,
+          "columna": 5
+        }
+      },
+      {
         "OpIzq": "a",
         "tipo": "DECREMENTO",
-        "linea": 41,
+        "linea": 49,
         "columna": 5
       }
     ],
@@ -736,28 +812,104 @@
       "OpIzq": {
         "valor": "a",
         "tipo": "IDENTIFICADOR",
-        "linea": 46,
+        "linea": 61,
         "columna": 10
       },
       "OpDer": {
         "valor": "0",
         "tipo": "INT",
-        "linea": 46,
+        "linea": 61,
         "columna": 12
       },
       "tipo": "MAYOR",
-      "linea": 46,
+      "linea": 61,
       "columna": 10
     },
     "instrucciones": [
       {
+        "condicion": {
+          "OpIzq": {
+            "OpIzq": {
+              "valor": "a",
+              "tipo": "IDENTIFICADOR",
+              "linea": 53,
+              "columna": 9
+            },
+            "OpDer": {
+              "valor": "1",
+              "tipo": "INT",
+              "linea": 53,
+              "columna": 12
+            },
+            "tipo": "MAYORIGUAL",
+            "linea": 53,
+            "columna": 9
+          },
+          "OpDer": {
+            "OpIzq": {
+              "valor": "a",
+              "tipo": "IDENTIFICADOR",
+              "linea": 53,
+              "columna": 17
+            },
+            "OpDer": {
+              "valor": "3",
+              "tipo": "INT",
+              "linea": 53,
+              "columna": 20
+            },
+            "tipo": "MENOR",
+            "linea": 53,
+            "columna": 17
+          },
+          "tipo": "AND",
+          "linea": 53,
+          "columna": 9
+        },
+        "tipo": "IF",
+        "instrucciones": [
+          {
+            "tipo": "PRINTLN",
+            "expresion": {
+              "valor": "true",
+              "tipo": "BOOL",
+              "linea": 54,
+              "columna": 17
+            },
+            "linea": 54,
+            "columna": 9
+          }
+        ],
+        "elifs": [],
+        "linea": 53,
+        "columna": 5,
+        "els": {
+          "tipo": "ELSE",
+          "instrucciones": [
+            {
+              "tipo": "PRINTLN",
+              "expresion": {
+                "valor": "false",
+                "tipo": "BOOL",
+                "linea": 58,
+                "columna": 17
+              },
+              "linea": 58,
+              "columna": 9
+            }
+          ],
+          "linea": 53,
+          "columna": 5
+        }
+      },
+      {
         "OpIzq": "a",
         "tipo": "DECREMENTO",
-        "linea": 45,
+        "linea": 60,
         "columna": 5
       }
     ],
-    "linea": 44,
+    "linea": 52,
     "columna": 1
   },
   {
@@ -770,27 +922,27 @@
       "expresion": {
         "valor": "5",
         "tipo": "INT",
-        "linea": 48,
+        "linea": 63,
         "columna": 8
       },
-      "linea": 48,
+      "linea": 63,
       "columna": 6
     },
     "condicion": {
       "OpIzq": {
         "valor": "i",
         "tipo": "IDENTIFICADOR",
-        "linea": 48,
+        "linea": 63,
         "columna": 11
       },
       "OpDer": {
         "valor": "2",
         "tipo": "INT",
-        "linea": 48,
+        "linea": 63,
         "columna": 13
       },
       "tipo": "MAYOR",
-      "linea": 48,
+      "linea": 63,
       "columna": 11
     },
     "actualizacion": {
@@ -802,20 +954,20 @@
         "OpIzq": {
           "valor": "i",
           "tipo": "IDENTIFICADOR",
-          "linea": 48,
+          "linea": 63,
           "columna": 18
         },
         "OpDer": {
           "valor": "1",
           "tipo": "INT",
-          "linea": 48,
+          "linea": 63,
           "columna": 20
         },
         "tipo": "RESTA",
-        "linea": 48,
+        "linea": 63,
         "columna": 18
       },
-      "linea": 48,
+      "linea": 63,
       "columna": 16
     },
     "instrucciones": [
@@ -826,34 +978,34 @@
             "OpIzq": {
               "valor": "\"i=\"",
               "tipo": "STRING",
-              "linea": 49,
+              "linea": 64,
               "columna": 11
             },
             "OpDer": {
               "valor": "i",
               "tipo": "IDENTIFICADOR",
-              "linea": 49,
+              "linea": 64,
               "columna": 16
             },
             "tipo": "SUMA",
-            "linea": 49,
+            "linea": 64,
             "columna": 11
           },
           "OpDer": {
             "valor": "\"\\\\n\"",
             "tipo": "STRING",
-            "linea": 49,
+            "linea": 64,
             "columna": 18
           },
           "tipo": "SUMA",
-          "linea": 49,
+          "linea": 64,
           "columna": 11
         },
-        "linea": 49,
+        "linea": 64,
         "columna": 5
       }
     ],
-    "linea": 48,
+    "linea": 63,
     "columna": 1
   },
   {
@@ -862,35 +1014,89 @@
       "OpIzq": {
         "valor": "x",
         "tipo": "IDENTIFICADOR",
-        "linea": 53,
+        "linea": 68,
         "columna": 8
       },
       "OpDer": {
         "valor": "100",
         "tipo": "INT",
-        "linea": 53,
+        "linea": 68,
         "columna": 10
       },
       "tipo": "MENOR",
-      "linea": 53,
+      "linea": 68,
       "columna": 8
     },
     "instrucciones": [
       {
+        "condicion": {
+          "OpIzq": {
+            "valor": "x",
+            "tipo": "IDENTIFICADOR",
+            "linea": 69,
+            "columna": 9
+          },
+          "OpDer": {
+            "valor": "50",
+            "tipo": "INT",
+            "linea": 69,
+            "columna": 13
+          },
+          "tipo": "MAYOR",
+          "linea": 69,
+          "columna": 9
+        },
+        "tipo": "IF",
+        "instrucciones": [
+          {
+            "tipo": "PRINT",
+            "expresion": {
+              "valor": "\"Mayor que 50\"",
+              "tipo": "STRING",
+              "linea": 71,
+              "columna": 15
+            },
+            "linea": 71,
+            "columna": 9
+          }
+        ],
+        "elifs": [],
+        "linea": 69,
+        "columna": 5,
+        "els": {
+          "tipo": "ELSE",
+          "instrucciones": [
+            {
+              "tipo": "PRINT",
+              "expresion": {
+                "valor": "\"Menor que 100\"",
+                "tipo": "STRING",
+                "linea": 76,
+                "columna": 15
+              },
+              "linea": 76,
+              "columna": 9
+            }
+          ],
+          "linea": 69,
+          "columna": 5
+        }
+      },
+      {
         "OpIzq": "X",
         "tipo": "INCREMENTO",
-        "linea": 54,
+        "linea": 79,
         "columna": 5
       }
     ],
-    "linea": 53,
+    "linea": 68,
     "columna": 1
   },
   {
     "condicion": {
       "valor": "edad",
       "tipo": "IDENTIFICADOR",
-      "linea": 58,
+      "linea": 83,
       "columna": 9
     },
     "casos": [
@@ -898,7 +1104,7 @@
         "valor": {
           "valor": "10",
           "tipo": "INT",
-          "linea": 59,
+          "linea": 84,
           "columna": 10
         },
         "instrucciones": [
@@ -907,22 +1113,22 @@
             "expresion": {
               "valor": "\"Tengo 10 anios.\"",
               "tipo": "STRING",
-              "linea": 60,
+              "linea": 85,
               "columna": 17
             },
-            "linea": 60,
+            "linea": 85,
             "columna": 9
           }
         ],
         "tipo": "CASE_NORMAL",
-        "linea": 59,
+        "linea": 84,
         "columna": 5
       },
       {
         "valor": {
           "valor": "18",
           "tipo": "INT",
-          "linea": 62,
+          "linea": 87,
           "columna": 10
         },
         "instrucciones": [
@@ -931,10 +1137,10 @@
             "expresion": {
               "valor": "\"Tengo 18 anios.\"",
               "tipo": "STRING",
-              "linea": 63,
+              "linea": 88,
               "columna": 15
             },
-            "linea": 63,
+            "linea": 88,
             "columna": 9
           },
           {
@@ -942,15 +1148,15 @@
             "expresion": {
               "valor": "\"Tengo 25 anios.\"",
               "tipo": "STRING",
-              "linea": 65,
+              "linea": 90,
               "columna": 17
             },
-            "linea": 65,
+            "linea": 90,
             "columna": 9
           }
         ],
         "tipo": "CASE_NORMAL",
-        "linea": 62,
+        "linea": 87,
         "columna": 5
       },
       {
@@ -960,27 +1166,194 @@
             "expresion": {
               "valor": "\"No se que edad tengo. :(\"",
               "tipo": "STRING",
-              "linea": 68,
+              "linea": 93,
               "columna": 15
             },
-            "linea": 68,
+            "linea": 93,
             "columna": 9
           }
         ],
         "tipo": "CASE_DEFAULT",
-        "linea": 67,
+        "linea": 92,
         "columna": 5
       }
     ],
     "tipo": "SWTICH",
-    "linea": 58,
+    "linea": 83,
     "columna": 1
+  },
+  {
+    "condicion": {
+      "OpIzq": {
+        "valor": "x",
+        "tipo": "IDENTIFICADOR",
+        "linea": 97,
+        "columna": 5
+      },
+      "OpDer": {
+        "valor": "50",
+        "tipo": "INT",
+        "linea": 97,
+        "columna": 9
+      },
+      "tipo": "MAYOR",
+      "linea": 97,
+      "columna": 5
+    },
+    "tipo": "IF",
+    "instrucciones": [
+      {
+        "tipo": "PRINT",
+        "expresion": {
+          "valor": "\"Mayor que 50\"",
+          "tipo": "STRING",
+          "linea": 99,
+          "columna": 11
+        },
+        "linea": 99,
+        "columna": 5
+      }
+    ],
+    "elifs": [
+      {
+        "condicion": {
+          "OpIzq": {
+            "OpIzq": {
+              "valor": "x",
+              "tipo": "IDENTIFICADOR",
+              "linea": 102,
+              "columna": 7
+            },
+            "OpDer": {
+              "valor": "50",
+              "tipo": "INT",
+              "linea": 102,
+              "columna": 12
+            },
+            "tipo": "MENORIGUAL",
+            "linea": 102,
+            "columna": 7
+          },
+          "OpDer": {
+            "OpIzq": {
+              "valor": "x",
+              "tipo": "IDENTIFICADOR",
+              "linea": 102,
+              "columna": 18
+            },
+            "OpDer": {
+              "valor": "0",
+              "tipo": "INT",
+              "linea": 102,
+              "columna": 22
+            },
+            "tipo": "MAYOR",
+            "linea": 102,
+            "columna": 18
+          },
+          "tipo": "AND",
+          "linea": 102,
+          "columna": 7
+        },
+        "tipo": "ELIF",
+        "instrucciones": [
+          {
+            "tipo": "PRINT",
+            "expresion": {
+              "valor": "\"Menor que 50\"",
+              "tipo": "STRING",
+              "linea": 104,
+              "columna": 12
+            },
+            "linea": 104,
+            "columna": 5
+          },
+          {
+            "condicion": {
+              "OpIzq": {
+                "valor": "x",
+                "tipo": "IDENTIFICADOR",
+                "linea": 105,
+                "columna": 9
+              },
+              "OpDer": {
+                "valor": "25",
+                "tipo": "INT",
+                "linea": 105,
+                "columna": 13
+              },
+              "tipo": "MAYOR",
+              "linea": 105,
+              "columna": 9
+            },
+            "tipo": "IF",
+            "instrucciones": [
+              {
+                "tipo": "PRINT",
+                "expresion": {
+                  "valor": "\"Numero mayor que 25\"",
+                  "tipo": "STRING",
+                  "linea": 107,
+                  "columna": 15
+                },
+                "linea": 107,
+                "columna": 9
+              }
+            ],
+            "elifs": [],
+            "linea": 105,
+            "columna": 5,
+            "els": {
+              "tipo": "ELSE",
+              "instrucciones": [
+                {
+                  "tipo": "PRINT",
+                  "expresion": {
+                    "valor": "\"Numero menor que 25\"",
+                    "tipo": "STRING",
+                    "linea": 110,
+                    "columna": 15
+                  },
+                  "linea": 110,
+                  "columna": 9
+                }
+              ],
+              "linea": 105,
+              "columna": 5
+            }
+          }
+        ],
+        "elifs": [],
+        "linea": 102,
+        "columna": 1
+      }
+    ],
+    "linea": 97,
+    "columna": 1,
+    "els": {
+      "tipo": "ELSE",
+      "instrucciones": [
+        {
+          "tipo": "PRINT",
+          "expresion": {
+            "valor": "\"Numero negativo\"",
+            "tipo": "STRING",
+            "linea": 117,
+            "columna": 11
+          },
+          "linea": 117,
+          "columna": 5
+        }
+      ],
+      "linea": 97,
+      "columna": 1
+    }
   },
   {
     "tipo": "RUN",
     "id": "main",
     "parametros": [],
-    "linea": 72,
+    "linea": 121,
     "columna": 1
   }
 ]

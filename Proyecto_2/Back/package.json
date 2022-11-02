@@ -23,6 +23,7 @@
     "path": "^0.12.7"
   },
   "devDependencies": {
+    "@types/graphviz": "^0.0.34",
     "nodemon": "^2.0.20"
   }
 }
