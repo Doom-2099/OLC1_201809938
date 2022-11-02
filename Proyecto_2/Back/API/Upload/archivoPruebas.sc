@@ -7,16 +7,16 @@ vector[2][3] = "cadena";
 
 int numero = 0 + maje++ + maje--;
 int var1, var2, var3;
-string cadena = "hola" + vec[5];
+string cadena = "hola" + vec[5] + (string)156;
 char var_1 = 'a';
 boolean verdadero;
 boolean flag1, flag2, flag3 = true;
 char ch1, ch2, ch3 = 'R';
-char caracter = '\\'';
-char caracter = '\\t';
-char caracter = '\\n';
-char caracter = '\\"';
-char caracter = '\\\\';
+char caracter = '\'';
+char caracter = '\t';
+char caracter = '\n';
+char caracter = '\"';
+char caracter = '\\';
 
 boolean var = 5 == 5;
 boolean var = 5 != 5;
@@ -31,36 +31,37 @@ numero = toString("asdf");
 holaMundo(int valor, string cadena):void {
     print(456);
     println("R");
-    print(toCharArray(identificador));
+    print(toCharArray("identificador"));
     print(round(5.2));
     vector1.push("valor");
     vector2.pop();
 }
 
-//run main();
-
 do{
-    if (a>=1 && a <3){
-    Println(true)
+    if (a>=1 && a <3)
+    {
+        Println(true);
     }
-    else{
-    Println(false)
+    else
+    {
+        Println(false);
     }
     a--;
 } until (a==0);
 
 do{
     if (a>=1 && a <3){
-    Println(true)
+        Println(true);
     }
-    else{
-    Println(false)
+    else
+    {
+        Println(false);
     }
     a--;
 } while (a>0);
 
-for (i=5; i>2;i=i-1 ){
-    Print("i="+i+"\\n")
+for (i=5; i>2; i=i-1){
+    Print("i="+i+"\\n");
     //más sentencias
 }
 
@@ -116,3 +117,5 @@ else
     Print("Numero negativo");
     //Más
 }
+
+run main();
