@@ -108,7 +108,7 @@
 <<EOF>>                                                 return 'EOF';
 
 . {
-    var msg = 'Error Lexico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column;
+    var msg = 'Error Lexico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + (yylloc.first_column + 1);
     ListError.getInstance().addLista(new Error(yytext, yylloc.first_line, (yylloc.first_column + 1), 'LEXICO', msg));
 }
 
@@ -173,9 +173,12 @@ INSTRUCCIONES
             $$ = [$1];
         }
 
-    | error { 
-        var msg = 'Hay Un Error Sintactico En La Linea: ' + this._$.first_line + ', En La Columna: ' + (this._$.first_column + 1) + ' Lexema: ' + yytext;
-        ListError.getInstance().addLista(new Error(yytext, this._$.first_line, (this._$.first_column + 1), 'SINTACTICO', msg));
+    | error 
+        { 
+            var msg = 'Hay Un Error Sintactico En La Linea: ' + this._$.first_line + ', En La Columna: ' + (this._$.first_column + 1) + ' Lexema: ' + yytext;
+            ListError.getInstance().addLista(new Error(yytext, this._$.first_line, (this._$.first_column + 1), 'SINTACTICO', msg));
+            $$ = [];
+        }
 ;
 
 INSTRUCCION
@@ -551,7 +554,7 @@ INC_DEC
 ;
 
 VALOR
-    : MENOS EXPRESION %prec UMENOS
+    : RES EXPRESION %prec UMENOS
         {
             $$ = Expresion.nuevaOperacion($2, undefined, TOA.NEGATIVO, this._$.first_line, (this._$.first_column + 1));
         }
@@ -673,7 +676,7 @@ METODO
 
     | IDENTIFICADOR P_OP P_CL DPUNTOS TIPO_DATO LL_OP INSTRUCCIONES LL_CL
         {
-            $$ = Instruccion.DeclaracionMetodo($1, IDEC.DEC_METODO, $6, [], $8, this._$.first_line, (this._$.first_column + 1));
+            $$ = Instruccion.DeclaracionMetodo($1, IDEC.DEC_METODO, $5, [], $7, this._$.first_line, (this._$.first_column + 1));
         }
 
     | IDENTIFICADOR P_OP PARAMETROS P_CL DPUNTOS TIPO_DATO LL_OP LL_CL
@@ -817,12 +820,7 @@ FOR_CICLO
 ;
 
 ACTUALIZACION
-    : INC_DEC
-        {
-            $$ = $1;
-        }
-
-    | ASIGNACION_VARIABLES
+    : EXPRESION
         {
             $$ = $1;
         }

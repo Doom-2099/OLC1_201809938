@@ -28,87 +28,65 @@ function analizarInst(root){
     switch(root.tipo) {
         case DEC.DEC:
             root.id.forEach(idValor => {
-                if(root.expresion == undefined) {
-                    TS.getInstance().addSymbol(new Symbol(idValor, 'variable', ambitoActual, getValorDefecto(root.tipoDato), root.linea, root.columna, root.tipoDato));
-                } else {
-                    TS.getInstance().addSymbol(new Symbol(idValor, 'Variable', ambitoActual, analizarOp(root.expresion), root.linea, root.columna, root.tipoDato));
-                }
+                TS.getInstance().addSymbol(new Symbol(idValor, 'Variable', ambitoActual, root.linea, root.columna, root.tipoDato));
             }); 
 
             break;
 
         case DEC.DEC_VECTOR_T1_D1:
-            TS.getInstance().addSymbol(new Symbol(root.id, 'Array', ambitoActual, analizarOp(root.expresion), root.linea, root.columna, root.tipoDato));
+            TS.getInstance().addSymbol(new Symbol(root.id, 'Array', ambitoActual, root.linea, root.columna, root.tipoDato));
 
             break;
 
         case DEC.DEC_VECTOR_T1_D2:
-            var valor = analizarOp(root.expresiones[0]) + ', ' + analizarOp(root.expresiones[1]);
-            TS.getInstance().addSymbol(new Symbol(root.id, 'Array', ambitoActual, valor, root.linea, root.columna, root.tipoDato));
+            TS.getInstance().addSymbol(new Symbol(root.id, 'Array', ambitoActual, root.linea, root.columna, root.tipoDato));
 
             break;
 
         case DEC.DEC_VECTOR_T2_D1:
-            var valores = '';
-
-            root.valores.forEach(valor => {
-                valores += analizarOp(valor) + ', ';
-            });
-
-            valores = valores.substring(0, valores.length - 2);
-
-            TS.getInstance().addSymbol(new Symbol(root.id, 'Array', ambitoActual, valores, root.linea, root.columna, root.tipoDato));
+            TS.getInstance().addSymbol(new Symbol(root.id, 'Array', ambitoActual, root.linea, root.columna, root.tipoDato));
 
             break;
 
         case DEC.DEC_VECTOR_T2_D2:
-            var valores = '';
-
-            root.valores[0].forEach(valor => {
-                valores += analizarOp(valor) + ', ';
-            });
-
-            valores = valores.substring(0, valores.length - 2);
-            valores = ' | ';
-
-            root.valores[1].forEach(valor => {
-                valores += analizarOp(valor) + ', ';
-            });
-
-            valores = valores.substring(0, valores.length - 2);
-
-            TS.getInstance().addSymbol(new Symbol(root.id, 'Array', ambitoActual, valores, root.linea, root.columna, root.tipoDato));
+            TS.getInstance().addSymbol(new Symbol(root.id, 'Array', ambitoActual, root.linea, root.columna, root.tipoDato));
 
             break;
 
         case DEC.DEC_METODO:
-            TS.getInstance().addSymbol(new Symbol(root.id, 'Procedimiento', ambitoActual, 'ninguno', root.linea, root.columna, root.tipoRetorno));
+            TS.getInstance().addSymbol(new Symbol(root.id, 'Procedimiento', ambitoActual, root.linea, root.columna, root.tipoRetorno));
             
             ambitoAnterior.push(ambitoActual);
-            ambitoActual = 'Procedimiento' + root.id;
+            ambitoActual = 'Procedimiento ' + root.id;
 
             root.parametros.forEach(param => {
                 analizarInst(param);
             });
 
-            ambitoActual = ambitoAnterior[-1];
-            ambitoAnterior.pop();
+            ambitoActual = ambitoAnterior.pop();
 
             break;
 
         case ASIG.ASIGNACION:
+            break;
 
         case ASIG.CALL_METODO:
+            break;
 
         case ASIG.CASTEO:
+            break;
 
         case TOA.DECREMENTO:
+            break;
 
         case TOA.INCREMENTO:
+            break;
 
         case ASIG.MOD_VECTOR_D1:
+            break;
 
         case ASIG.MOD_VECTOR_D2:
+            break;
 
         case CONTROL.IF:
             ambitoAnterior.push(ambitoActual);
@@ -118,61 +96,169 @@ function analizarInst(root){
                 analizarInst(instr);
             });
 
-            ambitoActual = ambitoAnterior[-1];
-            ambitoAnterior.pop();
+            ambitoActual = ambitoAnterior.pop();
 
             if(root.elifs.length != 0) {
-                // Recorrer Elifs
+                root.elifs.forEach(elif => {
+                    analizarInst(elif);
+                });
             }
 
+            if(root.els != undefined) {
+                analizarInst(root.els);
+            }
+
+            break;
+
         case CONTROL.ELIF:
+            ambitoAnterior.push(ambitoActual);
+            ambitoActual = 'ELIF_' + root.linea + '_' + root.columna;
+
+            root.instrucciones.forEach(instr => {
+                analizarInst(instr);
+            });
+
+            ambitoActual = ambitoAnterior.pop();
+
+            break;
 
         case CONTROL.ELSE:
+            ambitoAnterior.push(ambitoActual);
+            ambitoActual = 'ELSE_' + root.linea + '_' + root.columna;
+
+            root.instrucciones.forEach(instr => {
+                analizarInst(instr);
+            });
+
+            ambitoActual = ambitoAnterior.pop();
+
+            break;
 
         case CONTROL.SWITCH:
+            root.casos.forEach(caso => {
+                analizarInst(caso);
+            });
+
+            break;
 
         case CONTROL.CASE:
+            ambitoAnterior.push(ambitoActual);
+            ambitoActual = 'CASE_' + root.linea + '_' + root.columna;
+
+            root.instrucciones.forEach(instr => {
+                analizarInst(instr);
+            });
+
+            ambitoActual = ambitoAnterior.pop();
+
+            break;
 
         case CONTROL.DEFAULT:
+            ambitoAnterior.push(ambitoActual);
+            ambitoActual = 'DEFAULT_' + root.linea + '_' + root.columna;
+
+            root.instrucciones.forEach(instr => {
+                analizarInst(instr);
+            });
+
+            ambitoActual = ambitoAnterior.pop();
+
+            break;
 
         case TRANS.BREAK:
+            break;
 
         case TRANS.CONTINUE:
+            break;
 
         case TRANS.RETURN:
+            break;
 
         case CICLOS.FOR:
+            ambitoAnterior.push(ambitoActual);
+            ambitoActual = 'FOR_' + root.linea + '_' + root.columna;
+
+            analizarInst(root.contador);
+
+            root.instrucciones.forEach(instr => {
+                analizarInst(instr);
+            });
+
+            ambitoActual = ambitoAnterior.pop();
+
+            break;
 
         case CICLOS.WHILE:
+            ambitoAnterior.push(ambitoActual);
+            ambitoActual = 'WHILE_' + root.linea + '_' + root.columna;
+
+            root.instrucciones.forEach(instr => {
+                analizarInst(instr);
+            });
+
+            ambitoActual = ambitoAnterior.push();
+
+            break;
 
         case CICLOS.DO_WHILE:
+            ambitoAnterior.push(ambitoActual);
+            ambitoActual = 'DO_WHILE_' + root.linea + '_' + root.columna;
+
+            root.instrucciones.forEach(instr => {
+                analizarInst(instr);
+            });
+
+            ambitoActual = ambitoAnterior.pop();
+
+            break;
 
         case CICLOS.DO_UNTIL:
+            ambitoAnterior.push(ambitoActual);
+            ambitoActual = 'DO_UNTIL_' + root.linea + '_' + root.columna;
+
+            root.instrucciones.forEach(instr => {
+                analizarInst(instr);
+            });
+
+            ambitoActual = ambitoAnterior.pop();
+
+            break;
 
         case NATIVA.PRINT:
+            break;
 
         case NATIVA.PRINTLN:
+            break;
 
         case NATIVA.ROUND:
+            break;
 
         case NATIVA.LENGTH:
+            break;
 
         case NATIVA.TYPEOF:
+            break;
 
         case NATIVA.TOSTRING:
+            break;
 
         case NATIVA.TOCHARARRAY:
+            break;
 
         case NATIVA.TOLOWER:
+            break;
 
         case NATIVA.TOUPPER:
+            break;
 
         case NATIVA.RUN:
+            break;
 
         case NATIVA.POP:
+            break;
 
         case NATIVA.PUSH:
-
+            break;
 
     }
 }

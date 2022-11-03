@@ -213,15 +213,17 @@
 	</table>
 </div>
 
+<br>
+<br>
+
 <!-- Agregar Lectura De Tabla De Simbolos -->
 <div *ngIf="getFlagSimbolos()" class="container">
-	<table class="white-text centered">
-        <thead>
+	<table class="white-text centered highlight">
+        <thead class="blue-grey darken-1">
           <tr>
               <th>Simbolo</th>
               <th>Tipo</th>
               <th>Ambito</th>
-			  <th>Valor</th>
 			  <th>Linea</th>
 			  <th>Columna</th>
           </tr>
@@ -231,7 +233,6 @@
             <td>{{simbolo.simbolo}}</td>
             <td>{{simbolo.tipo}}</td>
             <td>{{simbolo.ambito}}</td>
-			<td>{{simbolo.valor}}</td>
 			<td>{{simbolo.linea}}</td>
 			<td>{{simbolo.columna}}</td>
 		  </tr>

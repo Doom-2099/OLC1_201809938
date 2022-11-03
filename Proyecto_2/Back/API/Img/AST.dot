@@ -1,0 +1,4 @@
+digraph G {
+  graph [ shape =circle ];
+  "instrucciones0000" [ label = "INSTRUCCIONES" ];
+}

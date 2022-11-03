@@ -3,7 +3,6 @@ export interface Symbol {
     tipo : string;
     ambito : string;
     anterior: string;
-    valor : string;
     linea : number;
     columna : number;
 }

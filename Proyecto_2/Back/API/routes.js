@@ -138,6 +138,7 @@ routes
    .post('/runCode', (req, res) => {
       req.on('data', data => {
          ListError.getInstance().clearLista();
+         TS.getInstance().clearLista();
          var code = JSON.parse(data)['code'];
          // EJECTUAR PARSER
          // RETORNAR ERRORES, SALIDAS, REPORTES
@@ -148,28 +149,28 @@ routes
                flag: false,
                message: 'El Codigo Contiene Errores',
                error: ListError.getInstance().getLista(),
-               symbol: ListSymbol.getInstance().getLista()
+               symbol: TS.getInstance().getTable()
             }).status(200).end();
-         }
 
-         var flag = graph.generarDOT(ast);
-         // Agregar Aqui Manejo De Tabla De Simbolos
-         interprete.analizarCode(ast);
+            var flag = graph.generarDOT(ast);
+            // Agregar Aqui Manejo De Tabla De Simbolos
+            interprete.analizarCode(ast);
 
-         if(flag) {
-            res.json({
-               flag: true,
-               message: 'El AST Se Genero Correctamente',
-               error: ListError.getInstance().getLista(),
-               symbol: ListSymbol.getInstance().getLista()
-            }).status(200).end();
-         } else {
-            res.json({
-               flag: false,
-               message: 'El AST No Se Genero',
-               error: ListError.getInstance().getLista(),
-               symbol: ListSymbol.getInstance().getLista()
-            }).status(200).end();
+            if(flag) {
+               res.json({
+                  flag: true,
+                  message: 'El AST Se Genero Correctamente',
+                  error: ListError.getInstance().getLista(),
+                  symbol: TS.getInstance().getTable()
+               }).status(200).end();
+            } else {
+               res.json({
+                  flag: false,
+                  message: 'El AST No Se Genero',
+                  error: ListError.getInstance().getLista(),
+                  symbol: TS.getInstance().getTable()
+               }).status(200).end();
+            }
          }
       });
    });

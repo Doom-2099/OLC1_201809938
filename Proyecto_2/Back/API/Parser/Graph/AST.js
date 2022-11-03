@@ -429,7 +429,7 @@ function analizarNodoInst(element) {
             var nodo4 = analizarNodoInst(element.contador);
             var nodo5 = analizarNodoOp(element.condicion);
 
-            if(element.actualizacion.tipo == TOA.INCREMENTO || element.actualizacion.tipo == TOA.DECREMENTO) {
+            if(element.actualizacion.tipo in TOA) {
                 var nodo6 = analizarNodoOp(element.actualizacion);
             } else {
                 var nodo6 = analizarNodoInst(element.actualizacion);
