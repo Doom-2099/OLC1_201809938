@@ -1,12 +1,13 @@
-const express = require('express');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 const multer = require('multer');
+const express = require('express');
+const TS = require('./Parser/Symbols/TS');
 const parser = require('./Parser/grammar');
 const graph = require('./Parser/Graph/AST');
 const ListError = require('./Parser/Error/ListError');
-const ListSymbol = require('./Parser/Symbols/ListSymbol');
 const interprete = require('./Parser/Symbols/Interprete');
+
 const routes = express.Router();
 
 const storage = multer.diskStorage({
@@ -152,7 +153,7 @@ routes
          }
 
          var flag = graph.generarDOT(ast);
-
+         // Agregar Aqui Manejo De Tabla De Simbolos
          interprete.analizarCode(ast);
 
          if(flag) {
