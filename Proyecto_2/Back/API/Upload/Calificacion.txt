@@ -31,10 +31,7 @@ boolean var_3_1 = false;
 char var_4_1 = 'a';
 char var_4_2 = '2';
 char var_4_3 = 'W';
-char var_4_4 = '@';
-char var_4_5 = '!';
-char var_4_6 = '%';
-char var_4_7 = '/';
+
 string var_5_1 = "Hola";
 string var_5_2 = "Mundo";
 string var_5_3 = "este es un mensaje @";
@@ -156,10 +153,10 @@ saludo(String nombre):void{
             var_3 = (5+6>48)? 1+1:45;   
             do {
                 while(edad<100){
-                    --var_1;
+                    var_1--;
                     println("Hola "+nombre);
                     println("Segundo semestre 2022");
-                    ++var_1;
+                    var_1++;
                     edad++;
                     //otra condicion booleanda
                     if( suma(1,2)==3 && 45+56==12){

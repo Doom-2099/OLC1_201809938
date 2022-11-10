@@ -25,8 +25,12 @@ const upload = multer({
 });
 
 routes
-   .get('/', (req, res) => {
+   .get('/AST.png', (req, res) => {
+      res.sendFile(path.resolve(__dirname, './Img/AST.png'));
+   })
 
+   .get('/parser.json', (req, res) => {
+      res.sendFile(path.resolve(__dirname, './JSON/parser.json'));
    })
 
    .post('/newFile', (req, res) => {
@@ -143,6 +147,11 @@ routes
          // EJECTUAR PARSER
          // RETORNAR ERRORES, SALIDAS, REPORTES
          var ast = parser.parse(code);
+         fs.writeFileSync(path.resolve(__dirname, './JSON/parser.json'), JSON.stringify(ast, null, 2), (err) => {
+            if(err) {
+               console.log(err);
+            }
+         });
 
          if(ListError.getInstance().getLista().length > 0) {
             res.json({
@@ -151,9 +160,8 @@ routes
                error: ListError.getInstance().getLista(),
                symbol: TS.getInstance().getTable()
             }).status(200).end();
-
+         } else {
             var flag = graph.generarDOT(ast);
-            // Agregar Aqui Manejo De Tabla De Simbolos
             interprete.analizarCode(ast);
 
             if(flag) {

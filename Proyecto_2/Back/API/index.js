@@ -16,8 +16,8 @@ const config = {
     }
 }
 
-app.use(express.static('./Img'));
-app.use(express.static('./JSON'));
+// app.use(express.static('./Img'));
+// app.use(express.static('./JSON'));
 app.use(require('./routes'));
 app.use(log('dev'));
 app.use(cors(config.application.cors.server));
